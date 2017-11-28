@@ -1,0 +1,22 @@
+int x;
+int A[3];
+int c;
+x = -10;
+while(x > 0){
+ x = -a;
+ y = 4;
+ while(3 < 4){
+ x = 2;
+ }
+
+ x=7;
+ }
+y=14;
+
+ read(c);
+ if(c==0){
+  break;
+ }
+}
+
+write(x);

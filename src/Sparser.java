@@ -167,11 +167,11 @@ public class Sparser {
                         c+=1; // jump a token ahead of }
                     }
                     else if(tokens.get(c).equals("}")){
-                        System.out.println("end of curly bracket detected");
+                        System.out.println("end of curly bracket detected. Going 2 nodes up.");
                         System.out.println("end of loop body analysis");
                         state = 1;
                         c+=1; // jump ahead
-                        placeHolderNode = placeHolderNode.getParent().getParent();
+                        placeHolderNode = placeHolderNode.getParent().getParent(); // go to parent node
                         // HERE. NEED TO GET UP AS MANY LEVELS AS BRACKETS COVERED!!!!<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                         // COUNT BRACKETS AND GET AS MANY PARENTS AS LEVELS IN THE BRACKETS
                     }

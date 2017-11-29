@@ -70,6 +70,30 @@ public class Node {
         node.getChildren().forEach(child -> printTree(child, appender + appender));
     }
 
+    public static int getTreeLevel(Node node){
+        int levelCounter = 0;
+        if (node.getParent() == null){
+            return 0; // we are at root so level is 0
+        }
+        else {
+            while (node.getParent()!=null){
+                node = node.getParent();
+                levelCounter++;
+            }
+        }
+        return levelCounter;
+    }
+
+    public static void testPrintTree(Node node, int appenderCounter){
+        for (int i = 0; i < appenderCounter; i++){
+            System.out.print("=");
+        }
+        System.out.println(node.getNodeData());
+
+
+        node.getChildren().forEach(child -> testPrintTree(child, getTreeLevel(child)));
+    }
+
     public static void main(String[] args) {
         Node tree = createTree();
         printTree(tree, "-");

@@ -21,7 +21,8 @@ public class Sparser {
         System.out.println("tokens = " + tokens);
 
         Node testTree = sparser.sparse(tokens);
-        Node.printTree(testTree, "=");
+        Node.printTree(testTree, "="); // regular way (double for next level)
+        Node.testPrintTree(testTree, 0); // tree level way (as many signs as level of the node)
     }
 
     // read file into string
@@ -95,12 +96,12 @@ public class Sparser {
 
     // Sparse the tokens. Returns folded tree.
     public Node sparse(ArrayList<String> tokens){
-    Node rootNode = new Node("root","root"); // start with the root
+    Node rootNode = new Node("root","root"); // start with the root - can always find it as parent is NULL
     Node placeHolderNode = rootNode; // some placeholder node to keep other nodes we are interested in
     int c = 0; // counter
     StringBuilder sb = new StringBuilder(); // building strings to add to the tree
     String type = ""; // store type of node we add to the tree
-    // state 0 will mean adding to ROOT
+    // state 0 will mean adding to "current root" (placeHolderNode)
     int state = 1; // start in state 1
 
         while (c < tokens.size()){
@@ -109,6 +110,7 @@ public class Sparser {
                 case 0:
                     // adding stuff to current root
                     System.out.println("add stuff to root");
+                    System.out.println("adding->" + sb.toString().replace("$",""));
                     String stringToAdd = sb.toString().replace("$","");
                     placeHolderNode.addChild(new Node(stringToAdd,type));
                     sb = new StringBuilder(); // clear the string builder
@@ -120,6 +122,13 @@ public class Sparser {
                     // var or array? Does not matter, use while until semicolon
                     if (tokens.get(c).equals("int")){
                         while (!tokens.get(c).equals(";")){
+                            //this is to insert space between int and var name
+                            if(tokens.get(c).equals("int")){
+                                sb.append(tokens.get(c));
+                                sb.append(" ");
+                                c++;
+                                continue;
+                            }
                             sb.append(tokens.get(c));
                             c++;
                         }
@@ -127,23 +136,34 @@ public class Sparser {
                         type = "init"; // node type: initialization
                         state = 0; // add to root node
                         c += 1; //jump a token ahead for semicolon
+                        // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
+                        // (otherwise the last line is missing)
+                        if (c>=tokens.size()){
+                            c--;
+                        }
                     }
                     // starts with a variable
                     // could be an assignment
                     else if(tokens.get(c).startsWith("$")){
-                        if (tokens.get(c+1).equals("=")){
-                            //clearly an assignment.
+                        if (tokens.get(c+1).equals("=") || tokens.get(c+1).equals("[")){
+                            //clearly an assignment of either a regular var or an array
                             while (!tokens.get(c).equals(";")){
                                 System.out.println("adding stuff until semicolon");
                                 sb.append(tokens.get(c));
-                                System.out.println(sb.toString());
                                 c++;
                             }
-                            System.out.println("exit");
+                            System.out.println("exit variable ");
                             sb.append(tokens.get(c)); // append a semicolon
+                            System.out.println("debugstrBuilder " + sb.toString());
                             type = "assign"; // node type: assignment
                             state = 0; // add to root node
                             c += 1; // jump a token ahead for semicolon
+
+                            // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
+                            // (otherwise the last line is missing)
+                            if (c>=tokens.size()){
+                                c--;
+                            }
                         }
                         //c++; // debugging placeholder to exit this. MAYBE it can ONLY be VAR in this case
                         break;
@@ -156,6 +176,14 @@ public class Sparser {
                         state = 2; // go to while loop state
                         c++; // move in tokens
                     }
+                    // we are entering if branch
+                    else if(tokens.get(c).equals("if")){
+                        System.out.println("if detected");
+                        sb.append(tokens.get(c)); // append if to sb
+                        type = "if"; // node type: if
+                        state = 4; // go to if state
+                        c++; // move in tokens
+                    }
                     // we are processing inner body of a loop or an if condition
                     else if(tokens.get(c).equals("{")){
                         System.out.println("Curly bracket detected");
@@ -163,19 +191,113 @@ public class Sparser {
                             System.out.println("analyzing inner body in between { and }");
                             state = 1; // go to top of state to analyse stuff inside the loop
                             System.out.println("crazy");
+                        System.out.println(tokens.get(c));
                         //}
                         c+=1; // jump a token ahead of }
+                        System.out.println(tokens.get(c));
                     }
                     else if(tokens.get(c).equals("}")){
                         System.out.println("end of curly bracket detected. Going 2 nodes up.");
                         System.out.println("end of loop body analysis");
                         state = 1;
                         c+=1; // jump ahead
-                        placeHolderNode = placeHolderNode.getParent().getParent(); // go to parent node
-                        // HERE. NEED TO GET UP AS MANY LEVELS AS BRACKETS COVERED!!!!<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-                        // COUNT BRACKETS AND GET AS MANY PARENTS AS LEVELS IN THE BRACKETS
+                        placeHolderNode = placeHolderNode.getParent().getParent(); // go 2 nodes up to get to level before while
+                        // or if..
+                        // MIGHT NEED TO MAKE SOME CHANGES HERE!!!<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
                     }
+                    else if(tokens.get(c).equals("else")){
+                        System.out.println("Else detected. Attaching to current (if) node.");
+                        sb.append(tokens.get(c)); // append it to sb
+                        type = "else"; // node type: else
+                        state = 5; // go to else state
+                        c++; // move in tokens
 
+                    }
+                    else if(tokens.get(c).equals("read")){
+                        while (!tokens.get(c).equals(";")){
+                            //this is to insert space between read and var name
+                            if(tokens.get(c).equals("read")){
+                                sb.append(tokens.get(c));
+                                sb.append(" ");
+                                c++;
+                                continue;
+                            }
+                            sb.append(tokens.get(c));
+                            c++;
+                        }
+                        sb.append(tokens.get(c)); // append a semicolon
+                        type = "read"; // node type: initialization
+                        state = 0; // add to root node
+                        c += 1; //jump a token ahead for semicolon
+                        // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
+                        // (otherwise the last line is missing)
+                        if (c>=tokens.size()){
+                            c--;
+                        }
+                    }
+                    else if(tokens.get(c).equals("write")){
+                        while (!tokens.get(c).equals(";")){
+                            if(tokens.get(c).equals("write")){
+                                sb.append(tokens.get(c));
+                                sb.append(" ");
+                                c++;
+                                continue;
+                            }
+                            sb.append(tokens.get(c));
+                            c++;
+                        }
+                        sb.append(tokens.get(c)); // append a semicolon
+                        type = "write"; // node type: initialization
+                        state = 0; // add to root node
+                        c += 1; //jump a token ahead for semicolon
+                        // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
+                        // (otherwise the last line is missing)
+                        if (c>=tokens.size()){
+                            c--;
+                        }
+                    }
+                    else if(tokens.get(c).equals("break")){
+                        while (!tokens.get(c).equals(";")){
+                            sb.append(tokens.get(c));
+                            c++;
+                        }
+                        sb.append(tokens.get(c)); // append a semicolon
+                        type = "break"; // node type: initialization
+                        state = 0; // add to root node
+                        c += 1; //jump a token ahead for semicolon
+                        // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
+                        // (otherwise the last line is missing)
+                        if (c>=tokens.size()){
+                            c--;
+                        }
+                    }
+                    else if(tokens.get(c).equals("continue")){
+                        while (!tokens.get(c).equals(";")){
+                            sb.append(tokens.get(c));
+                            c++;
+                        }
+                        sb.append(tokens.get(c)); // append a semicolon
+                        type = "continue"; // node type: initialization
+                        state = 0; // add to root node
+                        c += 1; //jump a token ahead for semicolon
+                        // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
+                        // (otherwise the last line is missing)
+                        if (c>=tokens.size()){
+                            c--;
+                        }
+                    }
+//                    else if(tokens.get(c).equals(";")){
+//                        sb.append(tokens.get(c));
+//                        c++;
+//                        type = "sc"; // node type: initialization
+//                        state = 0; // add to root node
+//                        c += 1; //jump a token ahead for semicolon
+//                        // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
+//                        // (otherwise the last line is missing)
+//                        if (c>=tokens.size()){
+//                            c--;
+//                        }
+//                    }
                     //anything else
                     else{
                         System.out.println("state 1 - got something else. STOP PROCESSING");
@@ -189,7 +311,7 @@ public class Sparser {
                     break;
 
                 case 2: //we encountered WHILE loop, let's deal with this here
-                    System.out.println("while state 2 now");
+                    System.out.println("WHILE: state 2 now");
                     placeHolderNode = placeHolderNode.addChild(new Node(sb.toString(),type)); // add while to current root and save
                     sb = new StringBuilder(); // clear sb
                     type = "condition";
@@ -210,7 +332,7 @@ public class Sparser {
                     sb = new StringBuilder();
                     type = "";
 
-                    placeHolderNode = placeHolderNode.addChild(new Node("interm","interm")); // add intermediate node with while body
+                    placeHolderNode = placeHolderNode.addChild(new Node("while_interm","while_interm")); // add intermediate node with while body
                     // note, we now store the INTERM node in placeHolderNode. This is because we want to assign inner loop stuff to it
                     // and treat it as a current ROOT
 
@@ -221,6 +343,47 @@ public class Sparser {
                     System.out.println("case 3 now");
                     System.out.println("maybe we dont need this, going straight to 1");
                     state = 1;
+                    break;
+                case 4: //we encountered IF keyword, let's deal with this here
+                    System.out.println("IF: state 4 now");
+                    placeHolderNode = placeHolderNode.addChild(new Node(sb.toString(),type)); // add if to current root and save
+                    sb = new StringBuilder(); // clear sb
+                    type = "condition";
+                    // get condition
+                    while (!tokens.get(c).equals("{")){
+                        if(!tokens.get(c).equals("(") &&
+                                !tokens.get(c).equals(")")) {
+                            sb.append(tokens.get(c));
+                        }
+                        c++; // move regardless!
+                    }
+                    System.out.println("should be before first { now");
+                    System.out.println(tokens.get(c));
+                    // we should now be before the first {
+                    placeHolderNode.addChild(new Node(sb.toString().replace("$",""), type)); // add condition child to if node
+                    // note that placeholder is still the IF node
+                    sb = new StringBuilder();
+                    type = "";
+
+                    placeHolderNode = placeHolderNode.addChild(new Node("if_interm","if_interm")); // add intermediate node with if body
+                    // note, we now store the INTERM node in placeHolderNode. This is because we want to assign inner if stuff to it
+                    // and treat it as a current ROOT
+
+                    state = 3; // go to state handling intermediate blocks
+                    break;
+                case 5: // we encountered ELSE keyword, let's deal with this here
+                    System.out.println("ELSE: state 5 now");
+                    ArrayList<Node> children = placeHolderNode.getChildren();
+                    placeHolderNode = children.get(children.size()-1); // current node is now the IF ...hopefully...
+                    placeHolderNode = placeHolderNode.addChild(new Node(sb.toString(),type)); // now do as before, add to current root and save
+                    //note, there is no condition here
+                    while (!tokens.get(c).equals("{")){
+                        //sb.append(tokens.get(c));
+                        c++; // simply move through the {
+                    }
+                    sb = new StringBuilder();
+                    type = "";
+                    state = 3;
                     break;
 
             }

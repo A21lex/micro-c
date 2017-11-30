@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class Sparser {
 
-    public static void main(String[] args) {
+    public static void main(String[] args){
         Node tree = new Node("root","root");
         Node.printTree(tree, "-");
 
@@ -226,7 +226,7 @@ public class Sparser {
                             c++;
                         }
                         sb.append(tokens.get(c)); // append a semicolon
-                        type = "read"; // node type: initialization
+                        type = "read"; // node type: read
                         state = 0; // add to root node
                         c += 1; //jump a token ahead for semicolon
                         // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
@@ -247,7 +247,7 @@ public class Sparser {
                             c++;
                         }
                         sb.append(tokens.get(c)); // append a semicolon
-                        type = "write"; // node type: initialization
+                        type = "write"; // node type: write
                         state = 0; // add to root node
                         c += 1; //jump a token ahead for semicolon
                         // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
@@ -262,7 +262,7 @@ public class Sparser {
                             c++;
                         }
                         sb.append(tokens.get(c)); // append a semicolon
-                        type = "break"; // node type: initialization
+                        type = "break"; // node type: break
                         state = 0; // add to root node
                         c += 1; //jump a token ahead for semicolon
                         // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
@@ -277,7 +277,7 @@ public class Sparser {
                             c++;
                         }
                         sb.append(tokens.get(c)); // append a semicolon
-                        type = "continue"; // node type: initialization
+                        type = "continue"; // node type: continue
                         state = 0; // add to root node
                         c += 1; //jump a token ahead for semicolon
                         // below is to ensure we still go to state 0 even if the code is over and while cond. is fulfilled
@@ -374,8 +374,8 @@ public class Sparser {
                 case 5: // we encountered ELSE keyword, let's deal with this here
                     System.out.println("ELSE: state 5 now");
                     ArrayList<Node> children = placeHolderNode.getChildren();
-                    placeHolderNode = children.get(children.size()-1); // current node is now the IF ...hopefully...
-                    placeHolderNode = placeHolderNode.addChild(new Node(sb.toString(),type)); // now do as before, add to current root and save
+                    placeHolderNode = children.get(children.size()-1); // current node is now the IF ...hopefully... (by getting the last child of the cur. node)
+                    placeHolderNode = placeHolderNode.addChild(new Node(sb.toString(),type)); // now do as before, add to current root (IF) and save
                     //note, there is no condition here
                     while (!tokens.get(c).equals("{")){
                         //sb.append(tokens.get(c));

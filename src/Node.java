@@ -2,6 +2,9 @@
  * Created by aleksandrs on 11/28/17.
  */
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -89,9 +92,24 @@ public class Node {
             System.out.print("=");
         }
         System.out.println(node.getNodeData());
-
-
         node.getChildren().forEach(child -> testPrintTree(child, getTreeLevel(child)));
+    }
+
+    // FIX this please <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    public static void printTreeToFile(Node node, int appenderCounter) throws IOException{
+        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("tree"));
+        for (int i = 0; i < appenderCounter; i++){
+            bufferedWriter.write("=");
+        }
+        bufferedWriter.write(node.getNodeData());
+        node.getChildren().forEach(child -> {
+            try {
+                printTreeToFile(child, getTreeLevel(child));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        bufferedWriter.close();
     }
 
     public static void main(String[] args) {

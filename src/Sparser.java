@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class Sparser {
 
     public static void main(String[] args){
-        Node tree = new Node("root","root");
+        Node tree = new Node("root","root"); // test a tree
         Node.printTree(tree, "-");
 
         Sparser sparser = new Sparser();

@@ -2,9 +2,7 @@
  * Created by aleksandrs on 11/28/17.
  */
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -12,8 +10,8 @@ import java.util.ArrayList;
  */
 public class Sparser {
 
-    public static void main(String[] args){
-        Node tree = new Node("root","root"); // test a tree
+    public static void main(String[] args) throws IOException {
+        Node tree = new Node("root","root");
         Node.printTree(tree, "-");
 
         Sparser sparser = new Sparser();
@@ -23,6 +21,15 @@ public class Sparser {
         Node testTree = sparser.sparse(tokens);
         Node.printTree(testTree, "="); // regular way (double for next level)
         Node.testPrintTree(testTree, 0); // tree level way (as many signs as level of the node)
+        // The following is used to get each line of the tree as a string in a ArrayList<String>
+        ArrayList<String> strings = new ArrayList<>();
+        Node.printTreeToFile(testTree, 0, strings);
+        System.out.println("tree strings array list: " + strings);
+        BufferedWriter writer = new BufferedWriter(new FileWriter("tree"));
+        for (String string: strings){
+            writer.write(string);
+        }
+        writer.close();
     }
 
     // read file into string

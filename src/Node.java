@@ -95,21 +95,22 @@ public class Node {
         node.getChildren().forEach(child -> testPrintTree(child, getTreeLevel(child)));
     }
 
-    // FIX this please <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    public static void printTreeToFile(Node node, int appenderCounter) throws IOException{
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("tree"));
+    // method for getting every tree line to be stored in an arraylist
+    public static void printTreeToFile(Node node, int appenderCounter, ArrayList<String> strings){
+        StringBuilder stringBuilder = new StringBuilder();
+//        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter("tree"));
         for (int i = 0; i < appenderCounter; i++){
-            bufferedWriter.write("=");
+            //bufferedWriter.write("=");
+            stringBuilder.append("=");
         }
-        bufferedWriter.write(node.getNodeData());
-        node.getChildren().forEach(child -> {
-            try {
-                printTreeToFile(child, getTreeLevel(child));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-        bufferedWriter.close();
+        stringBuilder.append(node.getNodeData());
+        stringBuilder.append("\n");
+        String tree = stringBuilder.toString();
+        strings.add(tree);
+        //bufferedWriter.write(node.getNodeData());
+        node.getChildren().forEach(child -> printTreeToFile(child, getTreeLevel(child),strings));
+
+        //bufferedWriter.close();
     }
 
     public static void main(String[] args) {

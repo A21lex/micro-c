@@ -1,0 +1,14 @@
+root
+=y=a;
+=while
+==i<8
+==while_interm
+===if
+====true
+====if_interm
+=====A[1][2]=2;
+===if
+====false
+====if_interm
+=====i=5;
+=x=3;

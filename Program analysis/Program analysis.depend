@@ -1,0 +1,165 @@
+# depslib dependency file v1.0
+1506937257 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\algorithms 2\program analysis\main.cpp
+	"flgnode.h"
+	"astnode.h"
+	<iostream>
+
+1506933810 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\algorithms 2\program analysis\flgnode.h
+	<string>
+	<vector>
+
+1506937289 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\algorithms 2\program analysis\astnode.h
+	<string>
+	<vector>
+	<iostream>
+
+1506937339 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\algorithms 2\program analysis\astnode.cpp
+	"astnode.h"
+
+1506934221 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\algorithms 2\program analysis\flgnode.cpp
+	"flgnode.h"
+
+1512512320 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\main.cpp
+	"FlowGraphConstructor.h"
+	"MFP.h"
+	"SignHandler.h"
+	"PreProcessing.h"
+	<iostream>
+
+1512348824 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\flgnode.h
+	<string>
+	<vector>
+
+1508064911 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\astnode.h
+	<string>
+	<vector>
+	<iostream>
+
+1508067837 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\astnode.cpp
+	"astnode.h"
+
+1512481459 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\flowgraphconstructor.h
+	"astnode.h"
+	"flgnode.h"
+	<stack>
+	<utility>
+	<fstream>
+	<memory>
+	<set>
+
+1512481504 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\flowgraphconstructor.cpp
+	"FlowGraphConstructor.h"
+
+1512348821 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\flgnode.cpp
+	"flgnode.h"
+	<iostream>
+
+1512503250 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\mfp.cpp
+	"MFP.h"
+	<iostream>
+	<sstream>
+	<string>
+
+1512503276 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\mfp.h
+	"PreProcessing.h"
+	<algorithm>
+	<set>
+	<iterator>
+
+1512346523 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\signhandler.cpp
+	"SignHandler.h"
+
+1512338008 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\signhandler.h
+	<map>
+	<set>
+	<iterator>
+	<algorithm>
+	<string>
+	<vector>
+	<iostream>
+	<sstream>
+	<stack>
+
+1512415237 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\preprocessing.h
+	"flgnode.h"
+	<set>
+	<iostream>
+	<sstream>
+	<algorithm>
+	<map>
+
+1512511475 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\preprocessing.cpp
+	"PreProcessing.h"
+
+1508064237 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\astnode.cpp
+	"astnode.h"
+
+1508061311 c:\users\dklevale\documents\codeblocksprojects\program analysis\astnode.h
+	<string>
+	<vector>
+	<iostream>
+
+1512348821 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\flgnode.cpp
+	"flgnode.h"
+	<iostream>
+
+1512348824 c:\users\dklevale\documents\codeblocksprojects\program analysis\flgnode.h
+	<string>
+	<vector>
+
+1512481504 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\flowgraphconstructor.cpp
+	"FlowGraphConstructor.h"
+
+1512481459 c:\users\dklevale\documents\codeblocksprojects\program analysis\flowgraphconstructor.h
+	"astnode.h"
+	"flgnode.h"
+	<stack>
+	<utility>
+	<fstream>
+	<memory>
+	<set>
+
+1512545754 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\main.cpp
+	"FlowGraphConstructor.h"
+	"MFP.h"
+	"SignHandler.h"
+	"PreProcessing.h"
+	<iostream>
+
+1512503276 c:\users\dklevale\documents\codeblocksprojects\program analysis\mfp.h
+	"PreProcessing.h"
+	<algorithm>
+	<set>
+	<iterator>
+
+1512415237 c:\users\dklevale\documents\codeblocksprojects\program analysis\preprocessing.h
+	"flgnode.h"
+	<set>
+	<iostream>
+	<sstream>
+	<algorithm>
+	<map>
+
+1512338008 c:\users\dklevale\documents\codeblocksprojects\program analysis\signhandler.h
+	<map>
+	<set>
+	<iterator>
+	<algorithm>
+	<string>
+	<vector>
+	<iostream>
+	<sstream>
+	<stack>
+
+1512503250 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\mfp.cpp
+	"MFP.h"
+	<iostream>
+	<sstream>
+	<string>
+
+1512514172 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\preprocessing.cpp
+	"PreProcessing.h"
+
+1512514030 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\signhandler.cpp
+	"SignHandler.h"
+

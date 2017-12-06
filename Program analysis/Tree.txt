@@ -1,0 +1,27 @@
+root
+
+=int $x;
+
+=int $c;
+
+=$x=10;
+
+=while
+
+==$x>0
+
+==while_interm
+
+===$x=$x-1;
+
+===read $c;
+
+===if
+
+====$c==0
+
+====if_interm
+
+=====break;
+
+=write $x;

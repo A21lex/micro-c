@@ -33,7 +33,7 @@ vector<string> getTokens(string expr){
             int locI = i+1;
             while(locI < expr.length() && (isalpha(expr.at(locI)) || isdigit(expr.at(locI)))) {
 
-                aggrToken << expr.at(locI); //fetch all the digits or chars of a variable
+                aggrToken << expr.at(locI); //fetch all the digits or chars of a variable or an expression like "read.."
                 locI++;
             }
             i += locI-1-i;
@@ -47,7 +47,7 @@ vector<string> getTokens(string expr){
         else if (elem == '-'){
             string charStr = "";
             charStr += elem; //-
-            if (tokens.empty() || tokens[tokens.size()-1] == "(") tokens.push_back("0"); // so we have 0-something
+            if (tokens.empty() || tokens[tokens.size()-1] == "(") tokens.push_back("0"); // so we have 0-something (for SDA)
             tokens.push_back(charStr);
         }
         else if (elem == '<' || elem == '>' || elem == '=' || elem == '!'){

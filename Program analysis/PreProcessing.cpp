@@ -2,11 +2,12 @@
 
 using namespace std;
 
+// vars are marked with $ by Sparser.java
 bool isVar(string token){
     if (token.at(0) == '$') return true;
     return false;
 }
-
+// parse an expr to get tokens of it
 vector<string> getTokens(string expr){
     //string rhs = expr.substr(expr.find(":=")+2, expr.length()-1);
     vector <string> tokens;
@@ -20,7 +21,7 @@ vector<string> getTokens(string expr){
             aggrToken << elem;
             int locI = i+1;
             while(locI < expr.length() && isdigit(expr.at(locI))){
-                aggrToken << expr.at(locI);
+                aggrToken << expr.at(locI); // fetch all the digits of a number
                 locI++;
             }
             i += locI-1-i; // i = locI-1;
@@ -32,7 +33,7 @@ vector<string> getTokens(string expr){
             int locI = i+1;
             while(locI < expr.length() && (isalpha(expr.at(locI)) || isdigit(expr.at(locI)))) {
 
-                aggrToken << expr.at(locI);
+                aggrToken << expr.at(locI); //fetch all the digits or chars of a variable
                 locI++;
             }
             i += locI-1-i;
@@ -41,18 +42,18 @@ vector<string> getTokens(string expr){
         else if (elem == '+' || elem == '*' || elem == '/' || elem == '(' || elem == ')' || elem == '[' || elem == ']'){
             string charStr = "";
             charStr += elem;
-            tokens.push_back(charStr);
+            tokens.push_back(charStr); //fetch all single element operators and brackets
         }
         else if (elem == '-'){
             string charStr = "";
-            charStr += elem;
-            if (tokens.empty() || tokens[tokens.size()-1] == "(") tokens.push_back("0");
+            charStr += elem; //-
+            if (tokens.empty() || tokens[tokens.size()-1] == "(") tokens.push_back("0"); // so we have 0-something
             tokens.push_back(charStr);
         }
         else if (elem == '<' || elem == '>' || elem == '=' || elem == '!'){
             string charStr = "";
             charStr += elem;
-            if (expr.at(i+1) == '=') {
+            if (expr.at(i+1) == '=') { //check if double comparison operator
                 charStr += '=';
                 i++;
             }
@@ -75,7 +76,7 @@ PreProcessing::PreProcessing(vector<flgnode> blocks, Analysis analysis){
         set<string> dummySet;
         //kills.push_back(dummySet);
         //gens.push_back(dummySet);
-        killsGens.push_back(make_pair(dummySet, dummySet));
+        killsGens.push_back(make_pair(dummySet, dummySet)); //start killsGens with dummy block to count intuitively from 1
         calcKillsGens();
     }
 }
@@ -84,10 +85,10 @@ void PreProcessing::calcTokensOfLabels(){
     for (unsigned int i = 0; i<blocks.size(); i++){
         vector<string> tokens = getTokens(blocks[i].getVal());
         //tokensAtLabels.insert(blocks[i].getLabel(), tokens);
-        tokensAtLabels[blocks[i].getLabel()] = tokens;
+        tokensAtLabels[blocks[i].getLabel()] = tokens; // map labels to tokens of corresp. blocks
     }
 }
-
+// get fvs of tokens of a block
 set<string> PreProcessing::getFreeVariables(flgnode block){
     set<string> res;
     vector<string> tokens = tokensAtLabels[block.getLabel()];
@@ -119,11 +120,11 @@ set<string> PreProcessing::getFreeVariables(flgnode block){
    // cout << "res size " << res.size() << endl;
     return res;
 }
-
+// get expressions of a block, not implemented yet
 set<string> PreProcessing::getExpressions(flgnode block){
 
 }
-
+// get all elements of a complete lattice
 void PreProcessing::calcAllElems(){
     set<string> res;
     if (analysis == AE || analysis == VBE){
@@ -141,12 +142,12 @@ void PreProcessing::calcAllElems(){
         }
     }
     else if (analysis == RD){
-         calcExtremalValues(); // for some reason does not add _,? to allElems, check it
+         calcExtremalValues();
           for (unsigned int i = 0; i<blocks.size(); i++){
 
             set<string> elemsPerBlock;
             //elemsPerBlock = getFreeVariables(blocks[i]);
-
+            // find variables in S being assigned to, those will be the elements of our complete lattice
             vector<string> tokens = tokensAtLabels[blocks[i].getLabel()];
             bool isAssignment = false;
             string varAssTo = "";
@@ -165,7 +166,7 @@ void PreProcessing::calcAllElems(){
 
             if (isAssignment){
                 ostringstream oss;
-                oss << varAssTo << "," << blocks[i].getLabel();
+                oss << varAssTo << "," << blocks[i].getLabel(); // get vars in format "var,label it is assigned in"
                 elemsPerBlock.insert(oss.str());
             }
             set_union(res.begin(),res.end(), elemsPerBlock.begin(), elemsPerBlock.end(),inserter(res,res.begin()));
@@ -173,7 +174,7 @@ void PreProcessing::calcAllElems(){
     }
     set_union(res.begin(),res.end(), allElems.begin(), allElems.end(),inserter(allElems,allElems.begin()));
 }
-
+// works for RDA for now
 void PreProcessing::calcExtremalValues(){
     set<string> res;
     for (unsigned int i = 0; i<blocks.size(); i++){
@@ -223,7 +224,7 @@ set<string> PreProcessing::calcKillsForBlock (flgnode block){
             {
                 string someElem = *it;
                 if (varAssTo == someElem.substr(0, someElem.find(","))) {
-                    res.insert(someElem); // go through all elems. If found variable we are assigning to, add it to list of kills.
+                    res.insert(someElem); // go through all elems. If found variable we are assigning to, add it,label to list of kills.
                 }
             }
         }

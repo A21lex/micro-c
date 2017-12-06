@@ -9,7 +9,7 @@ SignHandler::SignHandler(map<string,set<char>>* curSigns){
     buildMultTable();
     buildDivTable();
 }
-
+// shunting yard implementation for expression evaluation
 set<char> SignHandler::evaluateSigns(string expr){
     vector<string> tokens = getTokens(expr);
     //for (unsigned int i = 0; i<tokens.size(); i++)

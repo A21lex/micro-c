@@ -163,3 +163,75 @@
 1512514030 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\signhandler.cpp
 	"SignHandler.h"
 
+1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/astnode.cpp
+	"astnode.h"
+
+1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/astnode.h
+	<string>
+	<vector>
+	<iostream>
+
+1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/flgnode.cpp
+	"flgnode.h"
+	<iostream>
+
+1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/flgnode.h
+	<string>
+	<vector>
+
+1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/FlowGraphConstructor.cpp
+	"FlowGraphConstructor.h"
+
+1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/FlowGraphConstructor.h
+	"astnode.h"
+	"flgnode.h"
+	<stack>
+	<utility>
+	<fstream>
+	<memory>
+	<set>
+
+1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/MFP.cpp
+	"MFP.h"
+	<iostream>
+	<sstream>
+	<string>
+
+1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/MFP.h
+	"PreProcessing.h"
+	<algorithm>
+	<set>
+	<iterator>
+
+1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/PreProcessing.h
+	"flgnode.h"
+	<set>
+	<iostream>
+	<sstream>
+	<algorithm>
+	<map>
+
+1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/PreProcessing.cpp
+	"PreProcessing.h"
+
+1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/SignHandler.cpp
+	"SignHandler.h"
+
+1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/SignHandler.h
+	<map>
+	<set>
+	<iterator>
+	<algorithm>
+	<string>
+	<vector>
+	<iostream>
+	<sstream>
+	<stack>
+
+1512584734 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/main.cpp
+	"FlowGraphConstructor.h"
+	"MFP.h"
+	"SignHandler.h"
+	"PreProcessing.h"
+	<iostream>
+

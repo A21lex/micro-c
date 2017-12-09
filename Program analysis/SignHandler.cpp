@@ -209,4 +209,3 @@ void SignHandler::buildDivTable(){
     divTable['+']['0'] = {};
     divTable['+']['+'] = {'+'};
 }
-

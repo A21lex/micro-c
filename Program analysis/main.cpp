@@ -6,6 +6,15 @@
 
 using namespace std;
 
+//REMOVE> just testing
+//flgnode blockToTestStuff ("$x=5;",1);
+//flgnode blockToTestStuff ("$x < 32;", 2);
+//flgnode blockToTestStuff ("int $a;", 2);
+//flgnode blockToTestStuff("break;", 3);
+//flgnode blockToTestStuff("write $a;", 3);
+//flgnode blockToTestStuff("$a[32+b]=6;",3);
+//flgnode blockToTestStuff("int $a[25];",3);
+flgnode blockToTestStuff("read $A[32+b];",3);
 // getting reverse flow from regular one by substituting all elems by one another and putting order in reverse
 vector<pair<int, int>> reverseFlow (vector<pair<int, int>> flow){
     for (unsigned int i = 0; i<flow.size(); i++){
@@ -42,6 +51,13 @@ void performAnalysis(Analysis analysis, string worklistType){
         MFP mfpobj(flow, extrLabels, extrVal, bottomElems, subsOrSups, unOrInters, killsGens, blockList.size(), worklistType);
         mfpobj.SolveEquationsBvf();
 
+        //NEW. Testing block type detection.
+        string blockType = preproc.getBlockType(blockToTestStuff);
+        for (unsigned int i = 0; i < blockList.size(); i++){
+            string blockTypeHaha = preproc.getBlockType(blockList[i]);
+            cout << blockTypeHaha << endl;
+        }
+
      //set<string> tempSet = preproc.getGens();
     /* vector<set<string>> something = preproc.getKills();
         for (unsigned int i = 0; i<something.size(); i++){
@@ -64,6 +80,7 @@ void performAnalysis(Analysis analysis, string worklistType){
     else if (analysis == SDA){
 
     }
+
 }
 
 int main()
@@ -140,6 +157,7 @@ int main()
     }
 
     performAnalysis(RD, "LIFO");
+
 
     return 0;
 }

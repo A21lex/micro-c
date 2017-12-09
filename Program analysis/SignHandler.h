@@ -34,7 +34,6 @@ class SignHandler{
 
         bool hasPrecedence(char op1, char op2);
         bool isOperator(char c);
-
         template<typename T>
         T toppop(stack<T>* stackArg){
             T topElem = stackArg->top();

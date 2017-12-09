@@ -2,7 +2,59 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <regex>
 using namespace std;
+
+//get type of a block for deciding of tf to use for SDA
+static string getBlockType(flgnode block){
+    string blockType = "unknown";
+    string blockString = block.getVal(); // string
+    //vector<string> tokensOfABlock = PreProcessing.getTokens(block.getVal()); //individual tokens
+    cout << "block value: " << block.getVal() << endl;
+    //for (unsigned int i = 0; i < tokensOfABlock.size(); i++){
+     //   cout << "token: " << tokensOfABlock[i] << endl;
+      //  cout << "fdf" << endl;
+    //}
+        regex varass("\\$-?[a-zA-Z][a-zA-Z0-9_]*=.*"); // matches variable assignments like $a=...
+        regex test(".+(!=|==|<=|>=|>|<).+"); // matches tests. e.g. $a<b+32
+        regex vardec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches var declars, like int $a;
+        regex breakcont(" *(break|continue)[;]?"); // matches breakcontinue
+        regex read("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches reads, like read $a;
+        regex write("write{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches write, like write $a;
+        regex arrass("\\$-?[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr ass like $A[a]=...
+        regex arrdec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr dec like int $A[4];
+        regex arrread("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr read like read $A[5];
+    if (regex_match(blockString, varass)){
+        blockType = "regass"; // for regular var assignment
+    }
+    if (regex_match(blockString, test)){
+        blockType = "test"; // for ANY tests
+    }
+    if (regex_match(blockString, vardec)){
+        blockType = "regdec"; // for regular var declaration
+    }
+    if (regex_match(blockString, breakcont)){
+        blockType = "breakcont"; // for break or continue
+    }
+    if (regex_match(blockString, read)){
+        blockType = "regread"; // for regular read
+    }
+    if (regex_match(blockString, write)){
+        blockType = "regwrite"; // for regular write (actually there are no writes for arrays in MicroC)
+    }
+    if (regex_match(blockString, arrass)){
+        blockType = "arrass"; // for arr ass
+    }
+    if (regex_match(blockString, arrdec)){
+        blockType = "arrdec"; // for arr decl
+    }
+    if (regex_match(blockString, arrread)){
+        blockType = "arrread"; // for array read
+    }
+
+    cout << "block type: " << blockType << endl;
+    return blockType;
+}
 
 MFP::MFP(set<string> allElems, int numOfLabels){
     InstMonFramework(allElems);
@@ -485,7 +537,58 @@ set<string> MFP::calcTFbvf(vector<set<string>> Analysis, int label){
     gensApplied.insert(tfs[label].second.begin(), tfs[label].second.end());
     return gensApplied;
 }
-// set some branching here to calculate tf depending on block type
-set<string> MFP::calcTF(flgnode block, map<string, set<char>> sigmaHat){
 
-}
+// set some branching here to calculate tf depending on block type
+//set<string> MFP::calcTF(flgnode block, map<string, set<char>> sigmaHat){
+//    //new, for sign analysis
+//    string blockType = getBlockType(block);
+//    if(blockType == "test" || blockType == "breakcont" || blockType == "regwrite"){
+//        return sigmaHat; //tests, break, cont. and regwrite do not change any signs
+//    }
+//    else if(blockType == "regdec"){
+//        string var; // the varible declared
+//        map<string, set<char>>::iterator it = sigmaHat.find(var);
+//        if (it != sigmaHat.end()){
+//            it->second = {0}; // signs of var will be 0 when declaring it
+//        }
+//        return sigmaHat;
+//    }
+//    else if(blockType == "regass"){
+//        string varLhs;
+//        string varRhs;
+//        map<string, set<char>>::iterator it = sigmaHat.find(varLhs);
+//        if (it != sigmaHat.end()){
+//            it->second = As(varRhs);
+//        }
+//    }
+//    else if(blockType == "regread"){
+//        string var; // var being read
+//        map<string, set<char>>::iterator it = sigmaHat.find(var);
+//        if (it != sigmaHat.end()){
+//            it->second = {-,0,+};
+//        }
+//    }
+//    else if(blockType == "arrdec"){
+//        string var; // the array var declared
+//        map<string, set<char>>::iterator it = sigmaHat.find(var);
+//        if (it != sigmaHat.end()){
+//            it->second = {0}; // declared arrays have signs 0
+//        }
+//    }
+//     else if(blockType == "arrread"){
+//        string var; // the array var being read
+//        map<string, set<char>>::iterator it = sigmaHat.find(var);
+//        if (it != sigmaHat.end()){
+//            it->second = {-,0,+}; // read arrays have all signs
+//        }
+//    }
+//    else if (blockType == "arrass"){
+//        string var; // the variable being assigned
+//        map<string, set<char>>::iterator it = sigmaHat.find(var);
+//        if (it != sigmaHat.end()){
+//            // union existing signs and As(var)
+//            set_union(it->second.begin(), it->second.end(), As(var).begin(), As(var).end(), it->second.begin()); // read arrays have all signs
+//        }
+//    }
+//    return sigmaHat;
+//}

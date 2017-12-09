@@ -43,6 +43,7 @@ class PreProcessing{
         //vector<set<string>> getGens();
         vector<pair<set<string>,set<string>>> getKillsGens();
         set<string> getExtremalValues();
+        string getBlockType(flgnode block); // NEW
         //bool isVar(string token);
         //vector<string> getTokens(string expr);
 

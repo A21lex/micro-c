@@ -268,27 +268,27 @@ set<string> PreProcessing::calcGensForBlock (flgnode block){
         }
     }
     else if (analysis == LV){
-        regex read("(read \\$[a-zA-Z][a-zA-Z0-9_]*.*)"); // matches reads like read $a;.... return free variables
-        regex varass("\\$-?[a-zA-Z][a-zA-Z0-9_]*=.*"); // matches variable assignments like $a=...... return free variables of rhs
-        regex write("(write \\$[a-zA-Z][a-zA-Z0-9_]*.*)");
-        string blockString = block.getVal();
-        if(regex_match(blockString, varass)){
-            vector<string> tokens = getTokens(blockString.substr(blockString.find("=")+1,blockString.length()-1));
-            for(unsigned int i = 0; i < tokens.size(); i++){
-                if (isVar(tokens[i])){
-                res.insert(tokens[i]);
-                }
-            }
-        }
-        else if (regex_match(blockString, write)){
-            vector<string> tokens = getTokens(blockString);
-            for(unsigned int i = 0; i < tokens.size(); i++){
-                if (isVar(tokens[i])){
-                res.insert(tokens[i]);
-                }
-            }
-        }
-        //work in progress
+//        regex read("(read \\$[a-zA-Z][a-zA-Z0-9_]*.*)"); // matches reads like read $a;.... return free variables
+//        regex varass("\\$-?[a-zA-Z][a-zA-Z0-9_]*=.*"); // matches variable assignments like $a=...... return free variables of rhs
+//        regex write("(write \\$[a-zA-Z][a-zA-Z0-9_]*.*)");
+//        string blockString = block.getVal();
+//        if(regex_match(blockString, varass)){
+//            vector<string> tokens = getTokens(blockString.substr(blockString.find("=")+1,blockString.length()-1));
+//            for(unsigned int i = 0; i < tokens.size(); i++){
+//                if (isVar(tokens[i])){
+//                res.insert(tokens[i]);
+//                }
+//            }
+//        }
+//        else if (regex_match(blockString, write)){
+//            vector<string> tokens = getTokens(blockString);
+//            for(unsigned int i = 0; i < tokens.size(); i++){
+//                if (isVar(tokens[i])){
+//                res.insert(tokens[i]);
+//                }
+//            }
+//        }
+//        //work in progress
 
 
     }
@@ -320,5 +320,57 @@ set<string> PreProcessing::getAllElems(){
 set<string> PreProcessing::getExtremalValues(){
     return extremalValues;
 }
+//get type of a block for deciding of tf to use for SDA
+string PreProcessing::getBlockType(flgnode block){
+    string blockType = "unknown";
+    string blockString = block.getVal(); // string
+    vector<string> tokensOfABlock = getTokens(block.getVal()); //individual tokens
+    cout << "block value: " << block.getVal() << endl;
+    for (unsigned int i = 0; i < tokensOfABlock.size(); i++){
+        cout << "token: " << tokensOfABlock[i] << endl;
+        cout << "fdf" << endl;
+    }
+        regex varass("\\$-?[a-zA-Z][a-zA-Z0-9_]*=.*"); // matches variable assignments like $a=...
+        regex test(".+(!=|==|<=|>=|>|<).+"); // matches tests. e.g. $a<b+32
+        regex vardec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches var declars, like int $a;
+        regex breakcont(" *(break|continue)[;]?"); // matches breakcontinue
+        regex read("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches reads, like read $a;
+        regex write("write{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches write, like write $a;
+        regex arrass("\\$-?[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr ass like $A[a]=...
+        regex arrdec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr dec like int $A[4];
+        regex arrread("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr read like read $A[5];
+    if (regex_match(blockString, varass)){
+        blockType = "regass"; // for regular var assignment
+    }
+    if (regex_match(blockString, test)){
+        blockType = "test"; // for ANY tests
+    }
+    if (regex_match(blockString, vardec)){
+        blockType = "regdec"; // for regular var declaration
+    }
+    if (regex_match(blockString, breakcont)){
+        blockType = "breakcont"; // for break or continue
+    }
+    if (regex_match(blockString, read)){
+        blockType = "regread"; // for regular read
+    }
+    if (regex_match(blockString, write)){
+        blockType = "regwrite"; // for regular write (actually there are no writes for arrays in MicroC)
+    }
+    if (regex_match(blockString, arrass)){
+        blockType = "arrass"; // for arr ass
+    }
+    if (regex_match(blockString, arrdec)){
+        blockType = "arrdec"; // for arr decl
+    }
+    if (regex_match(blockString, arrread)){
+        blockType = "arrread"; // for array read
+    }
+
+    cout << "block type: " << blockType << endl;
+    return blockType;
+}
+
+
 
 

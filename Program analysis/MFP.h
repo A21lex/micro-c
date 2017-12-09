@@ -21,6 +21,7 @@ class MFP{
                               vector<flgnode> blockList, int numOfLabels, string worklistType);
         void SolveEquationsBvf();
         void SolveEquations(); // SDA
+        static string getBlockType(flgnode block); // NEW: get block type for tf for sda
 
     protected:
 

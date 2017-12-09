@@ -1,5 +1,5 @@
 #include "PreProcessing.h"
-
+#include <regex>
 using namespace std;
 
 // vars are marked with $ by Sparser.java
@@ -268,6 +268,28 @@ set<string> PreProcessing::calcGensForBlock (flgnode block){
         }
     }
     else if (analysis == LV){
+        regex read("(read \\$[a-zA-Z][a-zA-Z0-9_]*.*)"); // matches reads like read $a;.... return free variables
+        regex varass("\\$-?[a-zA-Z][a-zA-Z0-9_]*=.*"); // matches variable assignments like $a=...... return free variables of rhs
+        regex write("(write \\$[a-zA-Z][a-zA-Z0-9_]*.*)");
+        string blockString = block.getVal();
+        if(regex_match(blockString, varass)){
+            vector<string> tokens = getTokens(blockString.substr(blockString.find("=")+1,blockString.length()-1));
+            for(unsigned int i = 0; i < tokens.size(); i++){
+                if (isVar(tokens[i])){
+                res.insert(tokens[i]);
+                }
+            }
+        }
+        else if (regex_match(blockString, write)){
+            vector<string> tokens = getTokens(blockString);
+            for(unsigned int i = 0; i < tokens.size(); i++){
+                if (isVar(tokens[i])){
+                res.insert(tokens[i]);
+                }
+            }
+        }
+        //work in progress
+
 
     }
     else if (analysis == AE){

@@ -23,7 +23,7 @@ void performAnalysis(Analysis analysis, string worklistType){
     //Get FLOW and corresponding nodes from flow graph constructor class
     //vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\PA_BENCHMARKS\\anytree.txt");
     //vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\Users\\dklevale\\Documents\\CodeBlockProjects\\anytree.txt");
-    vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\Users\\dklevale\\Documents\\CodeBlockProjects\\anytree.txt");
+    vector<pair<int, int>> flow = fgConstr.prepareAST("/home/aleksandrs/Documents/Studies/anytree.txt");
     vector<flgnode> blockList = fgConstr.getBlockList();
     cout << endl;
     cout << endl;
@@ -139,7 +139,7 @@ int main()
         cout << endl;
     }
 
-    performAnalysis(RD, "FIFO");
+    performAnalysis(RD, "LIFO");
 
     return 0;
 }

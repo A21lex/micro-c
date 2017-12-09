@@ -25,7 +25,7 @@ MFP::MFP(vector<pair<int,int>> flow,
     this->numOfLabels = numOfLabels;
     this->worklistType = worklistType;
 }
-
+// blocklist as a param instead of tfs - suited for SDA
 MFP::MFP(vector<pair<int,int>> flow,
                               set<int> extrLabels, set<string> extrVal,
                               set<string> bottomElems, bool subsOrSups, bool unOrInters,
@@ -42,7 +42,7 @@ MFP::MFP(vector<pair<int,int>> flow,
     this->worklistType = worklistType;
 }
 
-// for now input is set manually
+// set input manually
 void MFP::InstMonFramework(set<string> allElems){
     //AE analysis example
     /*flow.push_back(make_pair(1,2));
@@ -317,7 +317,7 @@ void MFP::SolveEquationsBvf(){
     for (unsigned int i = 0; i<flow.size(); i++){
         int l1 = flow[i].first;
         int l2 = flow[i].second;
-        if (extrLabels.count(l1)==1) Analysis[l1] = extrVal;
+        if (extrLabels.count(l1)==1) Analysis[l1] = extrVal; //if l1 IN ext.labels, an=yo, else an=bot
         else Analysis[l1] = bottomElems;
         if (extrLabels.count(l2)==1) Analysis[l2] = extrVal;
         else Analysis[l2] = bottomElems;
@@ -329,11 +329,12 @@ void MFP::SolveEquationsBvf(){
         numOfIterations++;
         int l = worklist[0].first;
         int lPr = worklist[0].second;
-        worklist.erase(worklist.begin());
-        set<string> tfApplied = calcTFbvf(Analysis, l);
+        worklist.erase(worklist.begin()); // take 2 elems from the beginning of the worklist
+        set<string> tfApplied = calcTFbvf(Analysis, l); //fl(analysis[l])
         set<string> intersResSet;
         set_intersection(tfApplied.begin(),tfApplied.end(),Analysis[lPr].begin(),Analysis[lPr].end(),inserter(intersResSet,intersResSet.begin()));
-
+        // use the fact that: A INTERS B = A    < = >    A <= B
+        //here: tfApplied(l) <= An(lpr) iff tfApplied(l) INTERS An(lpr) == tfApplied(l)
         set<string> subSet;
         set<string> superSet;
         set<string> expectResSet;
@@ -349,7 +350,7 @@ void MFP::SolveEquationsBvf(){
         }
 
         //if (!(subSet.size() <= superSet.size() && tempSet == intersResSet)) {
-        if (subSet.size() < superSet.size() || intersResSet != expectResSet){
+        if (/*subSet.size() < superSet.size() ||*/ intersResSet != expectResSet){ // in essence, only 2nd cond is needed...
             set<string> tempSet;
             if (unOrInters)
                 set_intersection(Analysis[lPr].begin(),Analysis[lPr].end(), tfApplied.begin(), tfApplied.end(),inserter(tempSet,tempSet.begin()));
@@ -358,6 +359,7 @@ void MFP::SolveEquationsBvf(){
             Analysis[lPr] = tempSet;
             for (unsigned int i = 0; i<flow.size(); i++){
                 //cout << flow[i].first << "....." << lPr << endl;
+                //look in flow for pairs of (lPr, lDoublePr) which are not already in the worklist, add them
                 if (flow[i].first == lPr && find(worklist.begin(), worklist.end(), flow[i]) == worklist.end()) {
                     if (worklistType == "FIFO") worklist.insert(worklist.begin(),flow[i]);
                     else if (worklistType == "LIFO") worklist.push_back(flow[i]);
@@ -475,7 +477,7 @@ void MFP::SolveEquations(){
     }
 */
 }
-
+//fl(l)=(l\kill[B]l]) U gen ([B]l)
 set<string> MFP::calcTFbvf(vector<set<string>> Analysis, int label){
     set<string> killsApplied;
     set_difference( Analysis[label].begin(), Analysis[label].end(), tfs[label].first.begin(), tfs[label].first.end(), inserter(killsApplied, killsApplied.begin()));
@@ -483,7 +485,7 @@ set<string> MFP::calcTFbvf(vector<set<string>> Analysis, int label){
     gensApplied.insert(tfs[label].second.begin(), tfs[label].second.end());
     return gensApplied;
 }
-
+// set some branching here to calculate tf depending on block type
 set<string> MFP::calcTF(flgnode block, map<string, set<char>> sigmaHat){
 
 }

@@ -17,7 +17,7 @@ vector<pair<int,int>> FlowGraphConstructor::prepareAST(string path){
     // build a tree from file
     while (getline(inputProg,line)){
         if (!line.empty()){
-            int numOfEquals = calcTreeLevel(line); // get tree level of a node
+            int numOfEquals = calcTreeLevel(line);
             //cout << line << endl;
             pair<string, NodeType> args = convNames(line.substr(numOfEquals, line.size()-1));
 

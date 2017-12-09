@@ -210,7 +210,9 @@ set<string> PreProcessing::calcKillsForBlock (flgnode block){
             else if (tokens[i] == "read" || tokens[i] == "int"){
                 isAssignment = true;
                 varAssTo = tokens[i+1];
+                if ((i+2) <= tokens.size()-1){
                 nextTok = tokens[i+2];
+                }
                 break;
             }
         }

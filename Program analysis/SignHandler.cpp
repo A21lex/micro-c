@@ -75,7 +75,7 @@ bool SignHandler::isNumericStr(string argStr){
     return true;
 }
 
-set<char> SignHandler::applyOp(char op, set<char> a, set<char> b){
+ set<char> SignHandler::applyOp(char op, set<char> a, set<char> b){
     set<char> res;
     vector<char> av (a.begin(), a.end());
     vector<char> bv (b.begin(), b.end());
@@ -92,7 +92,7 @@ set<char> SignHandler::applyOp(char op, set<char> a, set<char> b){
         }
     }
     return res;
-}
+ }
 // specified version of getTokens from preproc class, see if can be replaced!
 vector<string> SignHandler::getTokens(string expr){
     string rhs = expr.substr(expr.find("=")+1, expr.length()-1);

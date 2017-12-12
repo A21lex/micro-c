@@ -60,7 +60,6 @@ class MFP{
         set<string> calcTFbvf(vector<set<string>> Analysis,int label);
         map<string, set<char>> calcTF(flgnode block, map<string, set<char>> sigmaHat); // SDA
 
-        //string getBlockType(flgnode block);
 };
 
 

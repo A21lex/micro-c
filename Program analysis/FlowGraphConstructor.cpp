@@ -102,7 +102,7 @@ vector<int> FlowGraphConstructor::calcFinal(vector<astnode*> prgseq){
     if (prgseq.size() == 1){
         if(prgseq[0]->getNodeType() == trivial) {
             vector<int> tempVect;
-            if (prgseq[0]->getVal() == "break" || prgseq[0]->getVal() == "continue") {
+            if (prgseq[0]->getVal() == "break;" || prgseq[0]->getVal() == "continue;") {
                 // do nothing
             }
             else tempVect.push_back(prgseq[0]->getLabel());
@@ -126,7 +126,7 @@ vector<int> FlowGraphConstructor::calcFinal(vector<astnode*> prgseq){
         else if (prgseq[0]->getNodeType() == loop) {
             vector<int> tempVect;
             tempVect.push_back(prgseq[0]->getChildren()[0]->getLabel());
-            return vectUnion(tempVect, calcBreakCont(prgseq[0]->getChildren()[1]->getChildren(), "break"));
+            return vectUnion(tempVect, calcBreakCont(prgseq[0]->getChildren()[1]->getChildren(), "break;"));
         }
 
         else return calcFinal(prgseq[0]->getChildren()); // for intermediate
@@ -166,23 +166,21 @@ vector<pair<int,int>> FlowGraphConstructor::calcFlow(vector<astnode*> prgseq){
         cout << " " << prgseq[i]->getVal() << " ";
     }
     cout << endl;*/
-
     vector<pair<int,int>> tempVect;
      if (prgseq.size() == 1){
         if(prgseq[0]->getNodeType() == trivial) {
-           if (prgseq[0]->getVal() == "break") {
+           if (prgseq[0]->getVal() == "break;") {
                 int leadsToL = -1;
-                //if ((whiles.top()->getChildOfNumber()+1) <= (whiles.top()->getParent()->getChildren().size()-1)){
                 if ((whiles.top()->getChildOfNumber()+1) < (whiles.top()->getParent()->getChildren().size())){
                     leadsToL= whiles.top()->getParent()->getChildren()[whiles.top()->getChildOfNumber()+1]->getLabel();
+                    whiles.pop();
+                    tempVect.push_back(make_pair(prgseq[0]->getLabel(),leadsToL));
                 }
                 else {
                     // probably inconsistent program
                 }
-                whiles.pop();
-                tempVect.push_back(make_pair(prgseq[0]->getLabel(),leadsToL));
            }
-           else if (prgseq[0]->getVal() == "continue"){
+           else if (prgseq[0]->getVal() == "continue;"){
 
            }
            else {
@@ -195,20 +193,16 @@ vector<pair<int,int>> FlowGraphConstructor::calcFlow(vector<astnode*> prgseq){
             whiles.push(prgseq[0]);
             vector<astnode*> S0 = prgseq[0]->getChildren()[1]->getChildren();
             vector<pair<int,int>> flowS0 = calcFlow(S0);
-            vector<int> finContS0 = vectUnion(calcFinal(S0), calcBreakCont(S0, "continue"));
+            vector<int> finContS0 = vectUnion(calcFinal(S0), calcBreakCont(S0, "continue;"));
             int L = prgseq[0]->getChildren()[0]->getLabel();
             vector<pair<int,int>> S0toL;
             vector<pair<int,int>> LtoS0;
             LtoS0.push_back(make_pair(L, calcInit(S0)));
-
             for (unsigned int i = 0; i<finContS0.size(); i++) {
                 S0toL.push_back(make_pair(finContS0[i],L));
             }
-
             tempVect = vectUnion(flowS0, vectUnion(LtoS0,S0toL));
-
             return tempVect;
-
         }
 
         else if(prgseq[0]->getNodeType() == branch){
@@ -242,10 +236,7 @@ vector<pair<int,int>> FlowGraphConstructor::calcFlow(vector<astnode*> prgseq){
         S1.push_back(prgseq[0]);
         vector<astnode*> S2 = prgseq;
         S2.erase(S2.begin());
-        // cout << "reached" << endl;
-        // cout << prgseq[0]->getNodeType() << endl;
         vector<int> finalsS1 = calcFinal(S1);
-        //cout << "not reached" << endl;
         vector<pair<int,int>> S1toS2;
         int initS2 = calcInit(S2);
         for (unsigned int i = 0; i<finalsS1.size(); i++){

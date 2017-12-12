@@ -22,7 +22,6 @@ enum Analysis{
 
 class PreProcessing{
     public:
-        //PreProcessing(Analysis analysis);
         PreProcessing(vector<flgnode> blocks, Analysis analysis); // also need a flow graph
 
         void calcTokensOfLabels();
@@ -31,24 +30,16 @@ class PreProcessing{
         set<string> getExpressions(flgnode block); // rename to calc
         void calcAllElems(); // the whole program basically
         set<string> getAllElems();
-        //vector<set<string>> calcKills (flgnode block);
-        //vector<set<string>> calcGens (flgnode block);
 
         void calcExtremalValues();
 
         set<string> calcKillsForBlock (flgnode block);
         set<string> calcGensForBlock (flgnode block);
         void calcKillsGens();
-        //vector<set<string>> getKills();
-        //vector<set<string>> getGens();
         vector<pair<set<string>,set<string>>> getKillsGens();
         set<string> getExtremalValues();
         map<string,set<char>> getExtremalValuesSDA();
         map<int,vector<string>> getTokensAtLabels(); // for SDA
-
-        //bool isVar(string token);
-        //vector<string> getTokens(string expr);
-
 
     protected:
 
@@ -62,9 +53,7 @@ class PreProcessing{
         set<string> extremalValues;
         map<string,set<char>> extremalValuesSDA;
 
-        //vector<set<string>> killsGens;
         vector<pair<set<string>, set<string>>> killsGens;
-        //vector<set<string>> gens;
 };
 
 #endif // PREPROCESSING_H_INCLUDED

@@ -19,7 +19,6 @@ vector<pair<int, int>> reverseFlow (vector<pair<int, int>> flow){
 void performAnalysis(Analysis analysis, string worklistType){
     FlowGraphConstructor fgConstr;
 
-    //vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\PA_BENCHMARKS\\anytree.txt");
     vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\anytree.txt");
     vector<flgnode> blockList = fgConstr.getBlockList();
     cout << endl;
@@ -35,8 +34,7 @@ void performAnalysis(Analysis analysis, string worklistType){
         bool unOrInters = false;
         preproc.calcKillsGens();
         vector<pair<set<string>,set<string>>>  killsGens = preproc.getKillsGens();
-        MFP mfpobj(flow, extrLabels, extrVal, bottomElems, subsOrSups, unOrInters, killsGens, blockList.size(),
-                   worklistType);
+        MFP mfpobj(flow, extrLabels, extrVal, bottomElems, subsOrSups, unOrInters, killsGens, blockList.size(), worklistType);
         mfpobj.SolveEquationsBvf();
 
      //set<string> tempSet = preproc.getGens();
@@ -73,11 +71,7 @@ void performAnalysis(Analysis analysis, string worklistType){
 
         bool subsOrSups = false;
         bool unOrInters = false;
-        //preproc.calcKillsGens();
-        //vector<pair<set<string>,set<string>>>  killsGens = preproc.getKillsGens();
-
         map<int,vector<string>> tokensAtLabels = preproc.getTokensAtLabels();
-
         MFP mfpobj(flow, extrLabels, extrValSDA, bottomElemsSDA,
                    subsOrSups, unOrInters, blockList, blockList.size(), worklistType, tokensAtLabels);
         mfpobj.SolveEquations();
@@ -166,7 +160,7 @@ int main()
         cout << endl;
     }
 
-    //performAnalysis(RD, "FIFO");
+   // performAnalysis(RD, "FIFO");
     performAnalysis(RD, "FIFO");
 
     return 0;

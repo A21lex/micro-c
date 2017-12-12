@@ -166,13 +166,14 @@ vector<pair<int,int>> FlowGraphConstructor::calcFlow(vector<astnode*> prgseq){
         cout << " " << prgseq[i]->getVal() << " ";
     }
     cout << endl;*/
+
     vector<pair<int,int>> tempVect;
      if (prgseq.size() == 1){
         if(prgseq[0]->getNodeType() == trivial) {
            if (prgseq[0]->getVal() == "break") {
                 int leadsToL = -1;
                 //if ((whiles.top()->getChildOfNumber()+1) <= (whiles.top()->getParent()->getChildren().size()-1)){
-                if ((whiles.top()->getChildOfNumber()+1) < (whiles.top()->getParent()->getChildren().size()-1)){
+                if ((whiles.top()->getChildOfNumber()+1) < (whiles.top()->getParent()->getChildren().size())){
                     leadsToL= whiles.top()->getParent()->getChildren()[whiles.top()->getChildOfNumber()+1]->getLabel();
                 }
                 else {

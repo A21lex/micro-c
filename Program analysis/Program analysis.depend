@@ -19,7 +19,7 @@
 1506934221 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\algorithms 2\program analysis\flgnode.cpp
 	"flgnode.h"
 
-1512512320 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\main.cpp
+1512960094 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\main.cpp
 	"FlowGraphConstructor.h"
 	"MFP.h"
 	"SignHandler.h"
@@ -54,22 +54,24 @@
 	"flgnode.h"
 	<iostream>
 
-1512503250 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\mfp.cpp
+1512960356 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\mfp.cpp
 	"MFP.h"
 	<iostream>
 	<sstream>
 	<string>
 
-1512503276 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\mfp.h
+1512956096 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\mfp.h
 	"PreProcessing.h"
+	"SignHandler.h"
 	<algorithm>
 	<set>
 	<iterator>
+	<regex>
 
-1512346523 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\signhandler.cpp
+1512955454 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\signhandler.cpp
 	"SignHandler.h"
 
-1512338008 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\signhandler.h
+1512932020 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\signhandler.h
 	<map>
 	<set>
 	<iterator>
@@ -80,7 +82,7 @@
 	<sstream>
 	<stack>
 
-1512415237 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\preprocessing.h
+1512931478 c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\preprocessing.h
 	"flgnode.h"
 	<set>
 	<iostream>
@@ -88,29 +90,29 @@
 	<algorithm>
 	<map>
 
-1512511475 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\preprocessing.cpp
+1512958609 source:c:\users\Администратор\desktop\Учеба, снова\master degree\courses\program analysis\program analysis\preprocessing.cpp
 	"PreProcessing.h"
 
-1508064237 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\astnode.cpp
+1508064237 source:c:\users\dklevale\documents\github\micro-c\program analysis\astnode.cpp
 	"astnode.h"
 
-1508061311 c:\users\dklevale\documents\codeblocksprojects\program analysis\astnode.h
+1508061311 c:\users\dklevale\documents\github\micro-c\program analysis\astnode.h
 	<string>
 	<vector>
 	<iostream>
 
-1512348821 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\flgnode.cpp
+1512348821 source:c:\users\dklevale\documents\github\micro-c\program analysis\flgnode.cpp
 	"flgnode.h"
 	<iostream>
 
-1512348824 c:\users\dklevale\documents\codeblocksprojects\program analysis\flgnode.h
+1512348824 c:\users\dklevale\documents\github\micro-c\program analysis\flgnode.h
 	<string>
 	<vector>
 
-1512481504 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\flowgraphconstructor.cpp
+1512481504 source:c:\users\dklevale\documents\github\micro-c\program analysis\flowgraphconstructor.cpp
 	"FlowGraphConstructor.h"
 
-1512481459 c:\users\dklevale\documents\codeblocksprojects\program analysis\flowgraphconstructor.h
+1512481459 c:\users\dklevale\documents\github\micro-c\program analysis\flowgraphconstructor.h
 	"astnode.h"
 	"flgnode.h"
 	<stack>
@@ -119,92 +121,22 @@
 	<memory>
 	<set>
 
-1512545754 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\main.cpp
+1513028046 source:c:\users\dklevale\documents\github\micro-c\program analysis\main.cpp
 	"FlowGraphConstructor.h"
 	"MFP.h"
 	"SignHandler.h"
 	"PreProcessing.h"
 	<iostream>
 
-1512503276 c:\users\dklevale\documents\codeblocksprojects\program analysis\mfp.h
+1512956096 c:\users\dklevale\documents\github\micro-c\program analysis\mfp.h
 	"PreProcessing.h"
-	<algorithm>
-	<set>
-	<iterator>
-
-1512415237 c:\users\dklevale\documents\codeblocksprojects\program analysis\preprocessing.h
-	"flgnode.h"
-	<set>
-	<iostream>
-	<sstream>
-	<algorithm>
-	<map>
-
-1512338008 c:\users\dklevale\documents\codeblocksprojects\program analysis\signhandler.h
-	<map>
-	<set>
-	<iterator>
-	<algorithm>
-	<string>
-	<vector>
-	<iostream>
-	<sstream>
-	<stack>
-
-1512503250 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\mfp.cpp
-	"MFP.h"
-	<iostream>
-	<sstream>
-	<string>
-
-1512514172 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\preprocessing.cpp
-	"PreProcessing.h"
-
-1512514030 source:c:\users\dklevale\documents\codeblocksprojects\program analysis\signhandler.cpp
 	"SignHandler.h"
-
-1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/astnode.cpp
-	"astnode.h"
-
-1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/astnode.h
-	<string>
-	<vector>
-	<iostream>
-
-1512584315 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/flgnode.cpp
-	"flgnode.h"
-	<iostream>
-
-1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/flgnode.h
-	<string>
-	<vector>
-
-1512778285 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/FlowGraphConstructor.cpp
-	"FlowGraphConstructor.h"
-
-1512584315 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/FlowGraphConstructor.h
-	"astnode.h"
-	"flgnode.h"
-	<stack>
-	<utility>
-	<fstream>
-	<memory>
+	<algorithm>
 	<set>
-
-1512841001 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/MFP.cpp
-	"MFP.h"
-	<iostream>
-	<sstream>
-	<string>
+	<iterator>
 	<regex>
 
-1512835877 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/MFP.h
-	"PreProcessing.h"
-	<algorithm>
-	<set>
-	<iterator>
-
-1512831021 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/PreProcessing.h
+1512931478 c:\users\dklevale\documents\github\micro-c\program analysis\preprocessing.h
 	"flgnode.h"
 	<set>
 	<iostream>
@@ -212,14 +144,7 @@
 	<algorithm>
 	<map>
 
-1512831236 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/PreProcessing.cpp
-	"PreProcessing.h"
-	<regex>
-
-1512832363 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/SignHandler.cpp
-	"SignHandler.h"
-
-1512832465 /home/aleksandrs/Documents/Programming/MicroC/Program analysis/SignHandler.h
+1512932020 c:\users\dklevale\documents\github\micro-c\program analysis\signhandler.h
 	<map>
 	<set>
 	<iterator>
@@ -230,10 +155,15 @@
 	<sstream>
 	<stack>
 
-1512836388 source:/home/aleksandrs/Documents/Programming/MicroC/Program analysis/main.cpp
-	"FlowGraphConstructor.h"
+1513030559 source:c:\users\dklevale\documents\github\micro-c\program analysis\mfp.cpp
 	"MFP.h"
-	"SignHandler.h"
-	"PreProcessing.h"
 	<iostream>
+	<sstream>
+	<string>
+
+1512958609 source:c:\users\dklevale\documents\github\micro-c\program analysis\preprocessing.cpp
+	"PreProcessing.h"
+
+1512955454 source:c:\users\dklevale\documents\github\micro-c\program analysis\signhandler.cpp
+	"SignHandler.h"
 

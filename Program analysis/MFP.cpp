@@ -2,58 +2,34 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <regex>
 using namespace std;
 
-//get type of a block for deciding of tf to use for SDA
-static string getBlockType(flgnode block){
-    string blockType = "unknown";
-    string blockString = block.getVal(); // string
-    //vector<string> tokensOfABlock = PreProcessing.getTokens(block.getVal()); //individual tokens
-    cout << "block value: " << block.getVal() << endl;
-    //for (unsigned int i = 0; i < tokensOfABlock.size(); i++){
-     //   cout << "token: " << tokensOfABlock[i] << endl;
-      //  cout << "fdf" << endl;
-    //}
-        regex varass("\\$-?[a-zA-Z][a-zA-Z0-9_]*=.*"); // matches variable assignments like $a=...
-        regex test(".+(!=|==|<=|>=|>|<).+"); // matches tests. e.g. $a<b+32
-        regex vardec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches var declars, like int $a;
-        regex breakcont(" *(break|continue)[;]?"); // matches breakcontinue
-        regex read("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches reads, like read $a;
-        regex write("write{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches write, like write $a;
-        regex arrass("\\$-?[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr ass like $A[a]=...
-        regex arrdec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr dec like int $A[4];
-        regex arrread("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr read like read $A[5];
-    if (regex_match(blockString, varass)){
-        blockType = "regass"; // for regular var assignment
+string getBlockType(vector<string> tokens){ // not the most efficient conditioning, but let's test the worklist algorithm first
+    if ((find(tokens.begin(), tokens.end(), "read") != tokens.end())
+        && (find(tokens.begin(), tokens.end(), "[") == tokens.end())) {
+            return "regread";
     }
-    if (regex_match(blockString, test)){
-        blockType = "test"; // for ANY tests
+    else if ((find(tokens.begin(), tokens.end(), "read") != tokens.end())
+        && (find(tokens.begin(), tokens.end(), "[") != tokens.end())) {
+            return "arrread";
     }
-    if (regex_match(blockString, vardec)){
-        blockType = "regdec"; // for regular var declaration
+    else if ((find(tokens.begin(), tokens.end(), "int") != tokens.end())
+        && (find(tokens.begin(), tokens.end(), "[") == tokens.end())) {
+            return "regdec";
     }
-    if (regex_match(blockString, breakcont)){
-        blockType = "breakcont"; // for break or continue
+    else if ((find(tokens.begin(), tokens.end(), "int") != tokens.end())
+        && (find(tokens.begin(), tokens.end(), "[") != tokens.end())) {
+            return "arrdec";
     }
-    if (regex_match(blockString, read)){
-        blockType = "regread"; // for regular read
+    else if ((find(tokens.begin(), tokens.end(), "=") != tokens.end())
+        && (tokens[1] == "[")) {
+            return "arrass";
     }
-    if (regex_match(blockString, write)){
-        blockType = "regwrite"; // for regular write (actually there are no writes for arrays in MicroC)
+    else if ((find(tokens.begin(), tokens.end(), "=") != tokens.end())
+        && (tokens[1] != "[")) {
+            return "regass";
     }
-    if (regex_match(blockString, arrass)){
-        blockType = "arrass"; // for arr ass
-    }
-    if (regex_match(blockString, arrdec)){
-        blockType = "arrdec"; // for arr decl
-    }
-    if (regex_match(blockString, arrread)){
-        blockType = "arrread"; // for array read
-    }
-
-    cout << "block type: " << blockType << endl;
-    return blockType;
+    else return "othertype";
 }
 
 MFP::MFP(set<string> allElems, int numOfLabels){
@@ -77,24 +53,26 @@ MFP::MFP(vector<pair<int,int>> flow,
     this->numOfLabels = numOfLabels;
     this->worklistType = worklistType;
 }
-// blocklist as a param instead of tfs - suited for SDA
+
 MFP::MFP(vector<pair<int,int>> flow,
-                              set<int> extrLabels, set<string> extrVal,
-                              set<string> bottomElems, bool subsOrSups, bool unOrInters,
-                              vector<flgnode> blockList, int numOfLabels, string worklistType){
+                              set<int> extrLabels, map<string,set<char>> extrVal,
+                              map<string,set<char>> bottomElems, bool subsOrSups, bool unOrInters,
+                              vector<flgnode> blockList, int numOfLabels, string worklistType,
+                              map<int,vector<string>> tokensAtLabels){
 
     this->flow = flow;
     this->extrLabels = extrLabels;
-    this->extrVal = extrVal;  // initial sigmaHat
-    this->bottomElems = bottomElems;
+    this->extrValSDA = extrVal;  // initial sigmaHat
+    this->bottomElemsSDA = bottomElems;
     this->subsOrSups = subsOrSups;
     this->unOrInters = unOrInters;
     this->blockList = blockList;
     this->numOfLabels = numOfLabels;
     this->worklistType = worklistType;
+    this->tokensAtLabels = tokensAtLabels;
 }
 
-// set input manually
+// for now input is set manually
 void MFP::InstMonFramework(set<string> allElems){
     //AE analysis example
     /*flow.push_back(make_pair(1,2));
@@ -366,10 +344,11 @@ void MFP::SolveEquationsBvf(){
 
     // Step 1
     vector<pair<int,int>> worklist = flow;
+    if (worklistType=="FIFO") reverse(worklist.begin(), worklist.end());
     for (unsigned int i = 0; i<flow.size(); i++){
         int l1 = flow[i].first;
         int l2 = flow[i].second;
-        if (extrLabels.count(l1)==1) Analysis[l1] = extrVal; //if l1 IN ext.labels, an=yo, else an=bot
+        if (extrLabels.count(l1)==1) Analysis[l1] = extrVal;
         else Analysis[l1] = bottomElems;
         if (extrLabels.count(l2)==1) Analysis[l2] = extrVal;
         else Analysis[l2] = bottomElems;
@@ -381,28 +360,19 @@ void MFP::SolveEquationsBvf(){
         numOfIterations++;
         int l = worklist[0].first;
         int lPr = worklist[0].second;
-        worklist.erase(worklist.begin()); // take 2 elems from the beginning of the worklist
-        set<string> tfApplied = calcTFbvf(Analysis, l); //fl(analysis[l])
+        worklist.erase(worklist.begin());
+        set<string> tfApplied = calcTFbvf(Analysis, l);
         set<string> intersResSet;
-        set_intersection(tfApplied.begin(),tfApplied.end(),Analysis[lPr].begin(),Analysis[lPr].end(),inserter(intersResSet,intersResSet.begin()));
-        // use the fact that: A INTERS B = A    < = >    A <= B
-        //here: tfApplied(l) <= An(lpr) iff tfApplied(l) INTERS An(lpr) == tfApplied(l)
-        set<string> subSet;
-        set<string> superSet;
+        set_intersection(tfApplied.begin(),tfApplied.end(),
+                         Analysis[lPr].begin(),Analysis[lPr].end(),inserter(intersResSet,intersResSet.begin()));
         set<string> expectResSet;
         if (subsOrSups){
-            subSet = Analysis[lPr];
-            superSet = tfApplied;
             expectResSet = Analysis[lPr];
         }
         else {
-            subSet = tfApplied;
-            superSet = Analysis[lPr];
             expectResSet = tfApplied;
         }
-
-        //if (!(subSet.size() <= superSet.size() && tempSet == intersResSet)) {
-        if (/*subSet.size() < superSet.size() ||*/ intersResSet != expectResSet){ // in essence, only 2nd cond is needed...
+        if (intersResSet != expectResSet){
             set<string> tempSet;
             if (unOrInters)
                 set_intersection(Analysis[lPr].begin(),Analysis[lPr].end(), tfApplied.begin(), tfApplied.end(),inserter(tempSet,tempSet.begin()));
@@ -411,10 +381,9 @@ void MFP::SolveEquationsBvf(){
             Analysis[lPr] = tempSet;
             for (unsigned int i = 0; i<flow.size(); i++){
                 //cout << flow[i].first << "....." << lPr << endl;
-                //look in flow for pairs of (lPr, lDoublePr) which are not already in the worklist, add them
                 if (flow[i].first == lPr && find(worklist.begin(), worklist.end(), flow[i]) == worklist.end()) {
-                    if (worklistType == "FIFO") worklist.insert(worklist.begin(),flow[i]);
-                    else if (worklistType == "LIFO") worklist.push_back(flow[i]);
+                    if (worklistType == "LIFO") worklist.insert(worklist.begin(),flow[i]);
+                    else if (worklistType == "FIFO") worklist.push_back(flow[i]);
                 }
             }
         }
@@ -462,19 +431,21 @@ void MFP::SolveEquationsBvf(){
 }
 
 void MFP::SolveEquations(){
-   /* vector<map<string, set<char>>> Analysis;
+
+    vector<map<string, set<char>>> Analysis;
     int numOfIterations = 0;
     Analysis.resize(numOfLabels+1);
 
     // Step 1
     vector<pair<int,int>> worklist = flow;
+    if (worklistType=="FIFO") reverse(worklist.begin(), worklist.end());
     for (unsigned int i = 0; i<flow.size(); i++){
         int l1 = flow[i].first;
         int l2 = flow[i].second;
-        if (extrLabels.count(l1)==1) Analysis[l1] = extrVal;
-        else Analysis[l1] = bottomElems;
-        if (extrLabels.count(l2)==1) Analysis[l2] = extrVal;
-        else Analysis[l2] = bottomElems;
+        if (extrLabels.count(l1)==1) Analysis[l1] = extrValSDA;
+        else Analysis[l1] = bottomElemsSDA;
+        if (extrLabels.count(l2)==1) Analysis[l2] = extrValSDA;
+        else Analysis[l2] = bottomElemsSDA;
     }
 
     int iters = 0;
@@ -483,112 +454,172 @@ void MFP::SolveEquations(){
         int l = worklist[0].first;
         int lPr = worklist[0].second;
         worklist.erase(worklist.begin());
+
         bool changeHappened = false;
+        map<string, set<char>>::iterator it;
 
-        // ---- beginning of map loop
+        for ( it = Analysis[l].begin(); it != Analysis[l].end(); it++ )
+        {
+            //set<string> tfApplied = calcTF(Analysis,l);
+            map<string, set<char>> tfApplied = calcTF(blockList[l-1], Analysis[l]);
+            set<char> tfAppliedEntry = tfApplied[it->first];
+            set<char> intersResSet;
+            set_intersection(tfAppliedEntry.begin(),tfAppliedEntry.end(),
+                             Analysis[lPr][it->first].begin(),Analysis[lPr][it->first].end(),
+                             inserter(intersResSet,intersResSet.begin()));
+            set<char> expectResSet;
+            if (subsOrSups) expectResSet = Analysis[lPr][it->first];
+            else expectResSet = tfAppliedEntry;
 
-        set<string> tfApplied = calcTFbvf(Analysis,l);
-        set<string> intersResSet;
-        set_intersection(tfApplied.begin(),tfApplied.end(),Analysis[lPr].begin(),Analysis[lPr].end(),inserter(intersResSet,intersResSet.begin()));
-
-        set<string> subSet;
-        set<string> superSet;
-        set<string> expectResSet;
-        if (subsOrSups){
-            subSet = Analysis[lPr];
-            superSet = tfApplied;
-            expectResSet = Analysis[lPr];
-        }
-        else {
-            subSet = tfApplied;
-            superSet = Analysis[lPr];
-            expectResSet = tfApplied;
-        }
-        //if (!(subSet.size() <= superSet.size() && tempSet == intersResSet)) {
-        if (subSet.size() < superSet.size() || intersResSet != expectResSet){
-            set<string> tempSet;
-            if (unOrInters)
-                set_intersection(Analysis[lPr].begin(),Analysis[lPr].end(), tfApplied.begin(), tfApplied.end(),inserter(tempSet,tempSet.begin()));
-            else
-                set_union(Analysis[lPr].begin(),Analysis[lPr].end(), tfApplied.begin(), tfApplied.end(),inserter(tempSet,tempSet.begin()));
-            Analysis[lPr] = tempSet;
-
-        }
-        // ---- end of the map loop
-
-        for (unsigned int i = 0; i<flow.size(); i++){
-            //cout << flow[i].first << "....." << lPr << endl;
-            if (flow[i].first == lPr && find(worklist.begin(), worklist.end(), flow[i]) == worklist.end()) {
-                if (worklistType == "FIFO") worklist.insert(worklist.begin(),flow[i]);
-                else if (worklistType == "LIFO") worklist.push_back(flow[i]);
+            if (intersResSet != expectResSet){
+                changeHappened = true;
+                set<char> tempSet;
+                if (unOrInters)
+                    set_intersection(Analysis[lPr][it->first].begin(),Analysis[lPr][it->first].end(),
+                                      tfAppliedEntry.begin(), tfAppliedEntry.end(),
+                                      inserter(tempSet,tempSet.begin()));
+                else
+                    set_union(Analysis[lPr][it->first].begin(),Analysis[lPr][it->first].end(),
+                               tfAppliedEntry.begin(), tfAppliedEntry.end(),
+                               inserter(tempSet,tempSet.begin()));
+                Analysis[lPr][it->first] = tempSet;
             }
         }
 
-        // debugging
+        if (changeHappened){
+            for (unsigned int i = 0; i<flow.size(); i++){
+                //cout << flow[i].first << "....." << lPr << endl;
+                if (flow[i].first == lPr && find(worklist.begin(), worklist.end(), flow[i]) == worklist.end()) {
+                    if (worklistType == "FIFO") worklist.insert(worklist.begin(),flow[i]);
+                    else if (worklistType == "LIFO") worklist.push_back(flow[i]);
+                }
+            }
+        }
+
         iters++;
+
     }
-*/
+
+    // Step 3
+    for (unsigned int i = 1; i<Analysis.size(); i++){
+        enterSolsSDA.push_back(Analysis[i]);
+         map<string, set<char>> tfApplied = calcTF(blockList[i-1], Analysis[i]);
+         exitSolsSDA.push_back(tfApplied);
+    }
+    //  print solution
+    cout << endl;
+    map<string, set<char>>::iterator it;
+    for ( it = exitSolsSDA[exitSolsSDA.size()-1].begin(); it != exitSolsSDA[exitSolsSDA.size()-1].end(); it++ )
+    {
+        cout << it->first;
+        vector<char> signs (it->second.begin(), it->second.end());
+        for (unsigned int i =0; i<signs.size(); i++) cout << " " << signs[i];
+        cout << endl;
+    }
+    cout << "Iterations: " << iters << endl;
 }
-//fl(l)=(l\kill[B]l]) U gen ([B]l)
+
 set<string> MFP::calcTFbvf(vector<set<string>> Analysis, int label){
     set<string> killsApplied;
-    set_difference( Analysis[label].begin(), Analysis[label].end(), tfs[label].first.begin(), tfs[label].first.end(), inserter(killsApplied, killsApplied.begin()));
+    set_difference( Analysis[label].begin(), Analysis[label].end(),
+                   tfs[label].first.begin(), tfs[label].first.end(), inserter(killsApplied, killsApplied.begin()));
     set<string> gensApplied = killsApplied;
     gensApplied.insert(tfs[label].second.begin(), tfs[label].second.end());
     return gensApplied;
 }
 
-// set some branching here to calculate tf depending on block type
-//set<string> MFP::calcTF(flgnode block, map<string, set<char>> sigmaHat){
-//    //new, for sign analysis
-//    string blockType = getBlockType(block);
-//    if(blockType == "test" || blockType == "breakcont" || blockType == "regwrite"){
-//        return sigmaHat; //tests, break, cont. and regwrite do not change any signs
-//    }
-//    else if(blockType == "regdec"){
-//        string var; // the varible declared
-//        map<string, set<char>>::iterator it = sigmaHat.find(var);
-//        if (it != sigmaHat.end()){
-//            it->second = {0}; // signs of var will be 0 when declaring it
-//        }
-//        return sigmaHat;
-//    }
-//    else if(blockType == "regass"){
-//        string varLhs;
-//        string varRhs;
-//        map<string, set<char>>::iterator it = sigmaHat.find(varLhs);
-//        if (it != sigmaHat.end()){
-//            it->second = As(varRhs);
-//        }
-//    }
-//    else if(blockType == "regread"){
-//        string var; // var being read
-//        map<string, set<char>>::iterator it = sigmaHat.find(var);
-//        if (it != sigmaHat.end()){
-//            it->second = {-,0,+};
-//        }
-//    }
-//    else if(blockType == "arrdec"){
-//        string var; // the array var declared
-//        map<string, set<char>>::iterator it = sigmaHat.find(var);
-//        if (it != sigmaHat.end()){
-//            it->second = {0}; // declared arrays have signs 0
-//        }
-//    }
-//     else if(blockType == "arrread"){
-//        string var; // the array var being read
-//        map<string, set<char>>::iterator it = sigmaHat.find(var);
-//        if (it != sigmaHat.end()){
-//            it->second = {-,0,+}; // read arrays have all signs
-//        }
-//    }
-//    else if (blockType == "arrass"){
-//        string var; // the variable being assigned
-//        map<string, set<char>>::iterator it = sigmaHat.find(var);
-//        if (it != sigmaHat.end()){
-//            // union existing signs and As(var)
-//            set_union(it->second.begin(), it->second.end(), As(var).begin(), As(var).end(), it->second.begin()); // read arrays have all signs
-//        }
-//    }
-//    return sigmaHat;
-//}
+map<string, set<char>> MFP::calcTF(flgnode block, map<string, set<char>> sigmaHat){
+
+    string blockType = getBlockType(tokensAtLabels[block.getLabel()]);
+    cout << block.getVal() << " : " << blockType << endl;
+    if (blockType == "regread"){
+        string varKey = tokensAtLabels[block.getLabel()][1];
+        sigmaHat[varKey] = {'-','0','+'};
+    }
+    else if (blockType == "regass"){
+        set<char> res = signHandler.evaluateSigns(block.getVal(), sigmaHat);
+        string varKey = tokensAtLabels[block.getLabel()][0];
+        sigmaHat[varKey] = res;
+
+       /* cout << "tf eval";
+        vector<char> v(sigmaHat[varKey].begin(), sigmaHat[varKey].end());
+        for (unsigned int i = 0; i<v.size(); i++) cout << " " << v[i];
+        cout << endl; */
+    }
+    else if (blockType == "arrread"){
+        string varKey = tokensAtLabels[block.getLabel()][1];
+        sigmaHat[varKey] = {'-','0','+'};
+    }
+    else if (blockType == "arrass"){
+        set<char> res = signHandler.evaluateSigns(block.getVal(), sigmaHat);
+        string varKey = tokensAtLabels[block.getLabel()][0];
+        set_union(sigmaHat[varKey].begin(),sigmaHat[varKey].end(),
+                  res.begin(), res.end(),inserter(sigmaHat[varKey],sigmaHat[varKey].begin()));
+    }
+    else if (blockType == "regdec"){
+        string varKey = tokensAtLabels[block.getLabel()][1];
+        sigmaHat[varKey] = {'0'};
+    }
+    else if (blockType == "arrdec"){
+        string varKey = tokensAtLabels[block.getLabel()][1];
+        sigmaHat[varKey] = {'0'};
+    }
+    /*cout << "tf returns" << endl;
+    map<string, set<char>>::iterator it;
+    for ( it = sigmaHat.begin(); it != sigmaHat.end(); it++ )
+    {
+        cout << it->first;
+        vector<char> signs (it->second.begin(), it->second.end());
+        for (unsigned int i =0; i<signs.size(); i++) cout << " " << signs[i];
+        cout << endl;
+    }
+    cout << "------" << endl;*/
+    return sigmaHat;
+}
+
+//get type of a block for deciding of tf to use for SDA
+/*string MFP::getBlockType(flgnode block){
+    string blockType = "unknown";
+    string blockString = block.getVal(); // string
+    //vector<string> tokensOfABlock = getTokens(block.getVal()); //individual tokens
+    cout << "block value: " << block.getVal() << endl;
+        regex varass("\\$-?[a-zA-Z][a-zA-Z0-9_]*=.*"); // matches variable assignments like $a=...
+        regex test(".+(!=|==|<=|>=|>|<).+"); // matches tests. e.g. $a<b+32
+        regex vardec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches var declars, like int $a;
+        regex breakcont(" *(break|continue)[;]?"); // matches breakcontinue
+        regex read("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches reads, like read $a;
+        regex write("write{1} +\\$[a-zA-Z][a-zA-Z0-9_]*;?"); // matches write, like write $a;
+        regex arrass("\\$-?[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr ass like $A[a]=...
+        regex arrdec("int{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr dec like int $A[4];
+        regex arrread("read{1} +\\$[a-zA-Z][a-zA-Z0-9_]*\\[+.*"); // matches arr read like read $A[5];
+    if (regex_match(blockString, varass)){
+        blockType = "regass"; // for regular var assignment
+    }
+    if (regex_match(blockString, test)){
+        blockType = "test"; // for ANY tests
+    }
+    if (regex_match(blockString, vardec)){
+        blockType = "regdec"; // for regular var declaration
+    }
+    if (regex_match(blockString, breakcont)){
+        blockType = "breakcont"; // for break or continue
+    }
+    if (regex_match(blockString, read)){
+        blockType = "regread"; // for regular read
+    }
+    if (regex_match(blockString, write)){
+        blockType = "regwrite"; // for regular write (actually there are no writes for arrays in MicroC)
+    }
+    if (regex_match(blockString, arrass)){
+        blockType = "arrass"; // for arr ass
+    }
+    if (regex_match(blockString, arrdec)){
+        blockType = "arrdec"; // for arr decl
+    }
+    if (regex_match(blockString, arrread)){
+        blockType = "arrread"; // for array read
+    }
+
+    cout << "block type: " << blockType << endl;
+    return blockType;
+}*/

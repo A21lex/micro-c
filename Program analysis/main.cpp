@@ -6,16 +6,6 @@
 
 using namespace std;
 
-//REMOVE> just testing
-//flgnode blockToTestStuff ("$x=5;",1);
-//flgnode blockToTestStuff ("$x < 32;", 2);
-//flgnode blockToTestStuff ("int $a;", 2);
-//flgnode blockToTestStuff("break;", 3);
-//flgnode blockToTestStuff("write $a;", 3);
-//flgnode blockToTestStuff("$a[32+b]=6;",3);
-//flgnode blockToTestStuff("int $a[25];",3);
-flgnode blockToTestStuff("read $A[32+b];",3);
-// getting reverse flow from regular one by substituting all elems by one another and putting order in reverse
 vector<pair<int, int>> reverseFlow (vector<pair<int, int>> flow){
     for (unsigned int i = 0; i<flow.size(); i++){
         int tempLabel = flow[i].first;
@@ -25,38 +15,29 @@ vector<pair<int, int>> reverseFlow (vector<pair<int, int>> flow){
     reverse(flow.begin(),flow.end());
     return flow;
 }
-// Analysis - RD/LV/AE/VBE/SDA, worklistType - LIFO/FIFO
+
 void performAnalysis(Analysis analysis, string worklistType){
     FlowGraphConstructor fgConstr;
 
-    //Get FLOW and corresponding nodes from flow graph constructor class
     //vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\PA_BENCHMARKS\\anytree.txt");
-    //vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\Users\\dklevale\\Documents\\CodeBlockProjects\\anytree.txt");
-    vector<pair<int, int>> flow = fgConstr.prepareAST("/home/aleksandrs/Documents/Studies/anytree.txt");
+    vector<pair<int, int>> flow = fgConstr.prepareAST("C:\\anytree.txt");
     vector<flgnode> blockList = fgConstr.getBlockList();
     cout << endl;
     cout << endl;
-    // for now only RD is supported automatically
-    if (analysis == RD) {
-        PreProcessing preproc (blockList, RD); // calculates allElems -> and kills/gens for BVF
-        set<string> allElems = preproc.getAllElems(); // gets allElems (extremal values and other elems, (x,?, x,l, etc)) (used in calcKillsForBlocks)
-        set<string> bottomElems; // bottom elements of a complete lattice (empty set for RDA)
-        set<int> extrLabels = fgConstr.getInit(); // extremal labels ( {init(S*)} for RDA)
-        set<string> extrVal = preproc.getExtremalValues(); // iotas/extremal values (x,?,  in FV(S*) for RDA)
-        bool subsOrSups = false; // subset is the "less than" operator for RDA
-        bool unOrInters = false; // union is the least upper bound operator for RDA
-        preproc.calcKillsGens();
-        vector<pair<set<string>,set<string>>>  killsGens = preproc.getKillsGens(); //get kills/gens for BVF TF
-        // instantiate MFP class and solve the equations for BVF
-        MFP mfpobj(flow, extrLabels, extrVal, bottomElems, subsOrSups, unOrInters, killsGens, blockList.size(), worklistType);
-        mfpobj.SolveEquationsBvf();
 
-        //NEW. Testing block type detection.
-        string blockType = preproc.getBlockType(blockToTestStuff);
-        for (unsigned int i = 0; i < blockList.size(); i++){
-            string blockTypeHaha = preproc.getBlockType(blockList[i]);
-            cout << blockTypeHaha << endl;
-        }
+    if (analysis == RD) {
+        PreProcessing preproc (blockList, RD);
+        set<string> allElems = preproc.getAllElems();
+        set<string> bottomElems;
+        set<int> extrLabels = fgConstr.getInit();
+        set<string> extrVal = preproc.getExtremalValues();
+        bool subsOrSups = false;
+        bool unOrInters = false;
+        preproc.calcKillsGens();
+        vector<pair<set<string>,set<string>>>  killsGens = preproc.getKillsGens();
+        MFP mfpobj(flow, extrLabels, extrVal, bottomElems, subsOrSups, unOrInters, killsGens, blockList.size(),
+                   worklistType);
+        mfpobj.SolveEquationsBvf();
 
      //set<string> tempSet = preproc.getGens();
     /* vector<set<string>> something = preproc.getKills();
@@ -78,9 +59,40 @@ void performAnalysis(Analysis analysis, string worklistType){
 
     }
     else if (analysis == SDA){
+        PreProcessing preproc (blockList, SDA);
+        set<string> allElems = preproc.getAllElems();
+        map<string,set<char>> bottomElemsSDA;
+        set<int> extrLabels = fgConstr.getInit();
+        map<string,set<char>> extrValSDA = preproc.getExtremalValuesSDA();
+
+        // every var maps to {'-','0','+'} OR you can set signs manually to known variables
+        /*map<string,set<char>> extrValSDA;
+        extrValSDA["$x"] = {'+'};
+        extrValSDA["$y"] = {'-'};
+        extrValSDA["$z"] = {'0'};*/ // example from lecture 6
+
+        bool subsOrSups = false;
+        bool unOrInters = false;
+        //preproc.calcKillsGens();
+        //vector<pair<set<string>,set<string>>>  killsGens = preproc.getKillsGens();
+
+        map<int,vector<string>> tokensAtLabels = preproc.getTokensAtLabels();
+
+        MFP mfpobj(flow, extrLabels, extrValSDA, bottomElemsSDA,
+                   subsOrSups, unOrInters, blockList, blockList.size(), worklistType, tokensAtLabels);
+        mfpobj.SolveEquations();
+
+      /* map<string, set<char>>::iterator it;
+       cout << extrValSDA.size() << endl;
+       for ( it = extrValSDA.begin(); it != extrValSDA.end(); it++ )
+       {
+            cout << it->first;
+            vector<char> signs (it->second.begin(), it->second.end());
+            for (unsigned int i =0; i<signs.size(); i++) cout << " " << signs[i];
+            cout << endl;
+       } */
 
     }
-
 }
 
 int main()
@@ -121,7 +133,7 @@ int main()
     //allElems.insert("b-a");
     //MFP<string> mfpobj(allElems);
     //mfpobj.SolveEquations();
-    // aka sigma hat
+
     map<string,set<char>> curSigns;
     curSigns["x"]={'0','-'};
     curSigns["y"]={'+'};
@@ -131,22 +143,20 @@ int main()
     curSigns["B"] = {'0'};
 
 
-    SignHandler signHandler(&curSigns);
+    SignHandler signHandler;
     //string expr = "a:=x*z/(-8)";
-    string expr = "B[9+28]:=8+B[9-z[800/400]]*5";
-    string lhs = expr.substr(0, expr.find(":="));
-    set<char> res = signHandler.evaluateSigns(expr);
+    string expr = "B[9+28]=8+B[9-z[800/400]]*5";
+    string lhs = expr.substr(0, expr.find("="));
+    set<char> res = signHandler.evaluateSigns(expr, curSigns);
     if (lhs.find("[") < lhs.length()-1) { // does not look safe, but who cares
-        // here we check what gets added to array and union its signs with what already is signs of array
         lhs = lhs.substr(0, expr.find("["));
         set_union(curSigns[lhs].begin(),curSigns[lhs].end(), res.begin(), res.end(),inserter(curSigns[lhs],curSigns[lhs].begin()));
     }
-    else curSigns[lhs]=res; // else just update signs of some variable
+    else curSigns[lhs]=res;
 
     //vector<char> resv(res.begin(), res.end());
     //for (unsigned i=0; i<resv.size(); i++) cout << resv[i] << endl;
 
-    // print sigma hat - variables and their calculated signs
     for(map<string, set<char>>::const_iterator it = curSigns.begin();
     it != curSigns.end(); ++it)
     {
@@ -156,8 +166,8 @@ int main()
         cout << endl;
     }
 
-    performAnalysis(RD, "LIFO");
-
+    //performAnalysis(RD, "FIFO");
+    performAnalysis(RD, "FIFO");
 
     return 0;
 }

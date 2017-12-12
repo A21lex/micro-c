@@ -34,7 +34,7 @@ class PreProcessing{
         //vector<set<string>> calcKills (flgnode block);
         //vector<set<string>> calcGens (flgnode block);
 
-       void calcExtremalValues();
+        void calcExtremalValues();
 
         set<string> calcKillsForBlock (flgnode block);
         set<string> calcGensForBlock (flgnode block);
@@ -43,7 +43,9 @@ class PreProcessing{
         //vector<set<string>> getGens();
         vector<pair<set<string>,set<string>>> getKillsGens();
         set<string> getExtremalValues();
-        string getBlockType(flgnode block); // NEW
+        map<string,set<char>> getExtremalValuesSDA();
+        map<int,vector<string>> getTokensAtLabels(); // for SDA
+
         //bool isVar(string token);
         //vector<string> getTokens(string expr);
 
@@ -58,6 +60,7 @@ class PreProcessing{
         map<int,vector<string>> tokensAtLabels;
 
         set<string> extremalValues;
+        map<string,set<char>> extremalValuesSDA;
 
         //vector<set<string>> killsGens;
         vector<pair<set<string>, set<string>>> killsGens;

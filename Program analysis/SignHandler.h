@@ -14,26 +14,28 @@ using namespace std;
 class SignHandler{
 
     public:
-        SignHandler(map<string,set<char>>* curSigns);
-        set<char> evaluateSigns(string expr);
+        //SignHandler(map<string,set<char>>* curSigns);
+        SignHandler();
+        set<char> evaluateSigns(string expr, map<string,set<char>> curSigns);
         vector<string> getTokens(string expr);
 
     protected:
 
     private:
         string expr;
-        map<string,set<char>> curSigns;
+        //map<string,set<char>> curSigns;
         map<char, map<char,set<char>>> plusTable;
         map<char, map<char,set<char>>> minusTable;
         map<char, map<char,set<char>>> multTable;
         map<char, map<char,set<char>>> divTable;
 
-        set<char> signsOfToken(string token);
+        set<char> signsOfToken(string token, map<string,set<char>> curSigns);
         bool isNumericStr(string argStr);
         set<char> applyOp(char op, set<char> a, set<char> b);
 
         bool hasPrecedence(char op1, char op2);
         bool isOperator(char c);
+
         template<typename T>
         T toppop(stack<T>* stackArg){
             T topElem = stackArg->top();
@@ -45,7 +47,6 @@ class SignHandler{
         void buildMinusTable();
         void buildMultTable();
         void buildDivTable();
-
 
 };
 

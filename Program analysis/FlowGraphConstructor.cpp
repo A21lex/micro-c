@@ -12,9 +12,9 @@ vector<pair<int,int>> FlowGraphConstructor::prepareAST(string path){
 
     getline(inputProg,line);
     astnode rootNode ("root", intermediate);
-    connectData.push_back(make_pair(0,&rootNode)); // root has level 0, remember that in connectData
+    connectData.push_back(make_pair(0,&rootNode));
 
-    // build a tree from file
+
     while (getline(inputProg,line)){
         if (!line.empty()){
             int numOfEquals = calcTreeLevel(line);
@@ -25,8 +25,8 @@ vector<pair<int,int>> FlowGraphConstructor::prepareAST(string path){
 
             astnode* itsParent;
             itsParent = findParent(numOfEquals, connectData);
-            curNode->setParent(itsParent); // set parents for nodes
-            connectData.push_back(make_pair(numOfEquals,curNode)); // build a tree from file
+            curNode->setParent(itsParent);
+            connectData.push_back(make_pair(numOfEquals,curNode));
         }
         else break;
     }
@@ -36,7 +36,7 @@ vector<pair<int,int>> FlowGraphConstructor::prepareAST(string path){
     rootNode.printTree();
     //constructFlowGraph(&rootNode);
     //return &rootNode;
-    sStar = rootNode.getChildren(); //S* is all children of the root
+    sStar = rootNode.getChildren();
     return constructFlowGraph(&rootNode);
 }
 
@@ -265,7 +265,7 @@ int FlowGraphConstructor::calcTreeLevel(string line){
 
 astnode* FlowGraphConstructor::findParent(int numOfEquals, vector<pair<int,astnode*>> connectInfo){
     int i = connectInfo.size()-1;
-    while (connectInfo[i].first>=numOfEquals && i>=0) i--; //find parent of a node by iterating until num(equals)<num equals of cur node
+    while (connectInfo[i].first>=numOfEquals && i>=0) i--;
     return connectInfo[i].second;
 }
 

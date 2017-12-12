@@ -2,15 +2,15 @@
 
 using namespace std;
 
-SignHandler::SignHandler(map<string,set<char>>* curSigns){
-    this->curSigns = *curSigns;
+SignHandler::SignHandler(){
+    //this->curSigns = curSigns;
     buildPlusTable();
     buildMinusTable();
     buildMultTable();
     buildDivTable();
 }
-// shunting yard implementation for expression evaluation
-set<char> SignHandler::evaluateSigns(string expr){
+
+set<char> SignHandler::evaluateSigns(string expr, map<string,set<char>> curSigns){ // tokens can be an argument
     vector<string> tokens = getTokens(expr);
     //for (unsigned int i = 0; i<tokens.size(); i++)
     //    cout << tokens[i] << endl;
@@ -20,7 +20,7 @@ set<char> SignHandler::evaluateSigns(string expr){
 
     for (unsigned int i = 0; i<tokens.size(); i++){
         if (tokens[i].length()>1 || !isOperator(tokens[i].at(0)))
-            values.push(signsOfToken(tokens[i]));
+            values.push(signsOfToken(tokens[i], curSigns));
         else if (tokens[i] == "(")
             operators.push(tokens[i].at(0));
         else if (tokens[i] == ")"){
@@ -58,7 +58,7 @@ set<char> SignHandler::evaluateSigns(string expr){
     return res;
 }
 
-set<char> SignHandler::signsOfToken(string token){
+set<char> SignHandler::signsOfToken(string token, map<string,set<char>> curSigns){
     if (isNumericStr(token)) {
         set<char> singleSign;
         if (token == "0") singleSign.insert('0');
@@ -95,7 +95,7 @@ set<char> SignHandler::applyOp(char op, set<char> a, set<char> b){
 }
 // specified version of getTokens from preproc class, see if can be replaced!
 vector<string> SignHandler::getTokens(string expr){
-    string rhs = expr.substr(expr.find(":=")+2, expr.length()-1);
+    string rhs = expr.substr(expr.find("=")+1, expr.length()-1);
     vector <string> tokens;
     for (unsigned int i = 0; i<rhs.length(); i++) {
         //chars.push_back(lhs.at(i));
@@ -137,7 +137,8 @@ vector<string> SignHandler::getTokens(string expr){
             tokens.push_back(charStr);
         }
         else {
-            cout << "Wrong character in expression" << endl;
+            //cout << elem << endl;
+            if (elem != ';') cout << "Wrong character in expression" << endl;
         }
     }
     return tokens;
@@ -209,3 +210,4 @@ void SignHandler::buildDivTable(){
     divTable['+']['0'] = {};
     divTable['+']['+'] = {'+'};
 }
+

@@ -365,17 +365,11 @@ void MFP::SolveEquationsBvf(){
         set<string> intersResSet;
         set_intersection(tfApplied.begin(),tfApplied.end(),Analysis[lPr].begin(),Analysis[lPr].end(),inserter(intersResSet,intersResSet.begin()));
 
-        set<string> subSet;
-        set<string> superSet;
         set<string> expectResSet;
         if (subsOrSups){
-            subSet = Analysis[lPr];
-            superSet = tfApplied;
             expectResSet = Analysis[lPr];
         }
         else {
-            subSet = tfApplied;
-            superSet = Analysis[lPr];
             expectResSet = tfApplied;
         }
 
